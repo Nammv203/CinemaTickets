@@ -5,6 +5,7 @@
             max-width: 200px;
             max-height: 100px
         }
+
         .icon-delete {
             font-size: 20px;
         }
@@ -42,10 +43,15 @@
                         </div>
                         <div class="col-sm-7">
                             <div class="text-sm-end">
-                                <button type="button" class="btn btn-success mb-2 me-1"><i
-                                        class="mdi mdi-cog-outline"></i></button>
-                                <button type="button" class="btn btn-light mb-2 me-1">Import</button>
-                                <button type="button" class="btn btn-light mb-2">Export</button>
+                                <form class="row row-cols-lg-auto g-3 align-items-end justify-content-end">
+                                    <div class="col-12">
+                                        <input type="search" class="form-control" id="inputPassword2" name="keyword"
+                                            placeholder="Tên rạp phim">
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -59,8 +65,8 @@
                                     <th>Mã rạp phim</th>
                                     <th>Vị trí</th>
                                     <th>Địa chỉ</th>
-{{--                                    <th>Email</th>--}}
-{{--                                    <th>Số điện thoại</th>--}}
+                                    {{--                                    <th>Email</th> --}}
+                                    {{--                                    <th>Số điện thoại</th> --}}
                                     <th class="text-center">Ảnh</th>
                                     <th class="text-center">
 
@@ -76,15 +82,16 @@
                                         <td>{{ $cinema->cinema_code }}</td>
                                         <td>{{ $cinema->location_district->district_name }}</td>
                                         <td>{{ $cinema->address }}</td>
-{{--                                        <td>{{ $cinema->email }}</td>--}}
-{{--                                        <td>{{ $cinema->phone }}</td>--}}
+                                        {{--                                        <td>{{ $cinema->email }}</td> --}}
+                                        {{--                                        <td>{{ $cinema->phone }}</td> --}}
 
                                         <td class="category-img">
                                             <img src="{{ asset(config('filesystems.folder_storage_user.cinema') . $cinema->picture) }}"
-                                                alt="film-img" class="img-fluid" width="150"/>
+                                                alt="film-img" class="img-fluid" width="150" />
                                         </td>
                                         <td>
-                                            <a href="{{route('admin.cinema-rooms.index',['cinema_id'=>$cinema->id])}}" class="btn btn-info mb-2">
+                                            <a href="{{ route('admin.cinema-rooms.index', ['cinema_id' => $cinema->id]) }}"
+                                                class="btn btn-info mb-2">
                                                 Quản lý phòng phim
                                                 <i class="mdi mdi-pencil text-white"></i>
                                             </a>
@@ -95,7 +102,8 @@
                                                 <a href="{{ route('admin.cinema.edit', $cinema->id) }}" class="action-icon">
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </a>
-                                                <form action="{{ route('admin.cinema.destroy', $cinema->id) }}" method="POST">
+                                                <form action="{{ route('admin.cinema.destroy', $cinema->id) }}"
+                                                    method="POST">
                                                     @csrf
                                                     @method('DELETE')
 
@@ -115,4 +123,5 @@
             </div>
         </div>
     </div>
+    {{ $cinemas->links() }}
 @endsection

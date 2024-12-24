@@ -39,7 +39,7 @@ class UserCreateRequest extends FormRequest
             'phone' => 'Số điện thoại',
             'password' => 'Mật khẩu',
             'birthday' => 'Ngày sinh',
-            'role_id' => 'Vai trò',
+          
         ];
     }
 }

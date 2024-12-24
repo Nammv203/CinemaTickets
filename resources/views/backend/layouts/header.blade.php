@@ -45,3 +45,9 @@
 
 {{-- css custom --}}
 <link rel="stylesheet" href="{{ asset('assets/css/backend.css') }}">
+
+<link href="{{asset('assets-backend')}}/css/select2.min.css" rel="stylesheet" type="text/css" />
+
+<!-- Daterangepicker css -->
+<link rel="stylesheet" href="{{asset('assets-backend')}}/vendor/daterangepicker/daterangepicker.css" type="text/css" />
+

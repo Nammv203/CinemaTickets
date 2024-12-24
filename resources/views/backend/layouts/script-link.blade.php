@@ -34,6 +34,13 @@
 <!-- Toastr -->
 <script src="{{ asset('assets-backend/js/libraries/toastr.js') }}"></script>
 
+<!--  Select2 Js -->
+<script src="{{asset('assets-backend')}}/js/select2.min.js"></script>
+
+<!-- Daterangepicker js -->
+<script src="{{asset('assets-backend')}}/vendor/daterangepicker/moment.min.js"></script>
+<script src="{{asset('assets-backend')}}/vendor/daterangepicker/daterangepicker.js"></script>
+
 {{-- copy from ui-modals.html --}}
 <script>
     const exampleModal = document.getElementById('exampleModal')
