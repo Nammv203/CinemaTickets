@@ -28,7 +28,6 @@ class CinemaCreateRequest extends FormRequest
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
-            'cinema_code' => 'required|string|max:255|unique:cinemas,cinema_code',
         ];
     }
 
@@ -41,7 +40,6 @@ class CinemaCreateRequest extends FormRequest
             'email' => 'Email',
             'phone' => 'Số điện thoại',
             'address' => 'Địa chỉ',
-            'cinema_code' => 'Mã rạp phim',
         ];
     }
 }

@@ -1,6 +1,6 @@
 @php
-    $categories = DB::table('categories')->get();
-    $filmWithCategory = \App\Models\Category::with('films')->take(4)->get();
+    $categories = get_all_category();
+    $filmWithCategory = get_films_with_category();
 @endphp
 
 <div class="prs_navigation_main_wrapper">
@@ -28,7 +28,7 @@
                         <ul class="dl-menu">
                             <li class="parent"><a href="{{route('client.home')}}">Trang chủ</a>
                             </li>
-                            <li class="parent megamenu"><a href="#">Phim</a>
+                            <li class="parent megamenu"><a href="{{route('client.categories')}}">Phim</a>
                                 <ul class="lg-submenu">
 
                                     @foreach ($filmWithCategory as $category)
@@ -45,24 +45,24 @@
                                         </li>
                                     @endforeach
 
-                                    <li>
-                                        <div class="prs_navi_slider_wraper">
-                                            <div class="owl-carousel owl-theme">
-                                                <div class="item">
-                                                    <img src="{{ asset('assets-website') }}/images/content/up1.jpg"
-                                                        alt="navi_img">
-                                                </div>
-                                                <div class="item">
-                                                    <img src="{{ asset('assets-website') }}/images/content/up2.jpg"
-                                                        alt="navi_img">
-                                                </div>
-                                                <div class="item">
-                                                    <img src="{{ asset('assets-website') }}/images/content/up3.jpg"
-                                                        alt="navi_img">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
+{{--                                    <li>--}}
+{{--                                        <div class="prs_navi_slider_wraper">--}}
+{{--                                            <div class="owl-carousel owl-theme">--}}
+{{--                                                <div class="item">--}}
+{{--                                                    <img src="{{ asset('assets-website') }}/images/content/up1.jpg"--}}
+{{--                                                        alt="navi_img">--}}
+{{--                                                </div>--}}
+{{--                                                <div class="item">--}}
+{{--                                                    <img src="{{ asset('assets-website') }}/images/content/up2.jpg"--}}
+{{--                                                        alt="navi_img">--}}
+{{--                                                </div>--}}
+{{--                                                <div class="item">--}}
+{{--                                                    <img src="{{ asset('assets-website') }}/images/content/up3.jpg"--}}
+{{--                                                        alt="navi_img">--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+{{--                                    </li>--}}
                                 </ul>
                             </li>
 
@@ -70,7 +70,7 @@
                             <li class="parent"><a href="{{route('client.categories')}}">Thể loại phim</a>
                                 <ul class="lg-submenu">
                                     @foreach ($categories as $category)
-                                        <li><a href="#">{{ $category->name }}</a></li>
+                                        <li><a href="{{route('client.categories',['category_id' => $category->id])}}">{{ $category->name }}</a></li>
                                     @endforeach
                                 </ul>
                             </li>
@@ -87,7 +87,62 @@
                 </button>
             </div>
             <div class="prs_top_login_btn_wrapper">
+
                 <div class="prs_animate_btn1">
+                    <!-- Single button -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-lg dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Tài khoản
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            @if(!auth()->check())
+                                <li>
+                                    <a href="{{route('auth.showRegistrationForm')}}">Đăng ký</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('auth.showLoginForm')}}">Đăng nhập</a>
+                                </li>
+                            @elseif(auth()->check() && auth()->user()->role_id !== 0 )
+                                <li>
+                                    <a href="{{route('admin.dashboard')}}" target="_blank">Trang Admin</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('auth.profile') }}">Tài khoản</a>
+                                </li>
+                            @else
+                                <li>
+                                    <a href="{{ route('auth.profile') }}">Tài khoản</a>
+                                </li>
+                            @endif
+
+                            @if(auth()->check())
+
+                                @if(Illuminate\Support\Facades\Session::has('order'))
+                                        <li>
+                                            <a href="{{ route('auth.client.movies.show.payment') }}">Tiếp tục thanh toán</a>
+                                        </li>
+                                @endif
+
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a href="">
+                                        <form action="{{ route('auth.postLogout') }}" method="POST">
+                                            @csrf
+                                            @method('POST')
+
+                                            <button type="submit" class="btn btn-link text-dark p-0" data-text="Đăng xuất">
+                                                <span class="text-dark">Đăng xuất</span>
+                                            </button>
+                                        </form>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+                {{-- <div class="prs_animate_btn1">
                     <ul>
                         @if(!auth()->check())
                             <li>
@@ -106,39 +161,21 @@
                                 </a>
                             </li>
                         @endif
-
                     </ul>
-
-                </div>
-            </div>
-            <div class="prs_top_login_btn_wrapper ">
-                <div class="prs_animate_btn1 ">
-                  <ul>
-                    <li>
-                        <form action="{{ route('auth.logout') }}" method="POST">
-                            @csrf
-                            @method('POST')
-
-                            <button type="submit" class="button button--tamaya" data-text="Đăng xuất">
-                                <span class="button-logout">Đăng xuất</span>
-                            </button>
-                        </form>
-                    </li>
-                  </ul>
-                </div>
+                </div> --}}
             </div>
             <div class="product-heading">
-                <div class="con">
-                    <select>
-                        <option>Tất cả</option>
+                <form action="{{ route('client.categories') }}" method="GET" class="con">
+                    <select name="category_id">
+                        <option value="">Tất cả</option>
                         @foreach ($categories as $category)
-                            <option>{{ $category->name }}</option>
+                            <option {{request('category_id') == $category->id ? 'selected' : ''}} value="{{$category->id}}">{{ $category->name }}</option>
                         @endforeach
                     </select>
-                    <input type="text" placeholder="Tìm kiếm phim">
+                    <input type="search" name="keyword" placeholder="Tìm kiếm phim" required>
                     <button type="submit"><i class="flaticon-tool"></i>
                     </button>
-                </div>
+                </form>
             </div>
         </div>
         <div id="mobile-nav" data-prevent-default="true" data-mouse-events="true">

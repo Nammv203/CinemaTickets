@@ -12,10 +12,10 @@ class LogoutController extends Controller
     {
         Auth::logout();
 
-        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         toastr()->success('Đăng xuất thành công.');
         return redirect()->route('client.home');
     }
 };
+

@@ -121,7 +121,7 @@
 											<br>
                                             <span>{{number_format($sumChairTypePrice)}}đ</span>
 										</li>
-										<li>Ghi chú bảng giá ghế *<span></span>
+			<li>Ghi chú bảng giá ghế *<span></span>
 										</li>
 									</ul>
 									<p>Hạng ghế A <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_A}}</span>
@@ -209,6 +209,7 @@
                 $('#btn-payment').removeClass('active');
             }
         })
+
 	</script>
 </body>
 
