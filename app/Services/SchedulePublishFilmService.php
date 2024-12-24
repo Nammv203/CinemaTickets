@@ -13,7 +13,7 @@ class SchedulePublishFilmService
     public function getDataBookingPage($movieId)
     {
         // get list schedules <= 15 next days
-        $after7days = Carbon::now()->addDays(15)->format('Y-m-d');
+//        $after7days = Carbon::now()->addDays(15)->format('Y-m-d');
         $currentDays = Carbon::now()->format('Y-m-d');
         $schedules = SchedulePublishFilm::with(['cinemaRoom' => function ($query) {
             $query->select('id', 'room_code','cinema_id')
@@ -21,11 +21,12 @@ class SchedulePublishFilmService
                 ->get();
         }])
             ->where('film_id', $movieId)
-            ->where('show_date','<=', $after7days)
+//            ->where('show_date','<=', $after7days)
             ->where('show_date','>=', $currentDays)
             ->where('status', 1)
             ->orderBy('show_date','asc')
-            ->get();
+            ->limit(10)
+        ->get();
 
 //        $data = [];
         // format data theo date
@@ -42,7 +43,7 @@ class SchedulePublishFilmService
                 return $cinemaSchedules->groupBy('show_time'); // Group by show_time
             });
         });
-//dd($result);
+
         return $result ?? [];
     }
 }
