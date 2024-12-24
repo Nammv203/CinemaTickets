@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Admin\CinemaRoomsController;
 use App\Http\Controllers\Admin\CinemaRoomChairsController;
+use App\Http\Controllers\Admin\FilmReviewController;
 use App\Http\Controllers\Admin\SchedulePublishFilmsController;
 use App\Http\Controllers\Website\SchedulePublishFilmsController as SchedulePublishFilmsWebsiteController;
 
@@ -40,8 +41,13 @@ Route::group([
     Route::name('auth.')->group(function () {
         Route::get('/login', [LoginController::class, 'showLoginForm'])->name('showLoginForm');
         Route::post('/login', [LoginController::class, 'postLogin'])->name('postLogin');
+
         Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('showRegistrationForm');
         Route::post('/register', [RegisterController::class, 'postRegister'])->name('postRegister');
+
+        Route::get('verify/{token}', [RegisterController::class, 'showVerifyForm'])->name('showVerify');
+        Route::post('verify/{token}', [RegisterController::class, 'postVerify'])->name('postVerify');
+        Route::post('resend-verify/{token}', [RegisterController::class, 'resendEmailVerify'])->name('resendVerify');
     });
 });
 
@@ -90,6 +96,7 @@ Route::group([
         Route::resource('film', FilmsController::class);
         Route::resource('cinema', CinemasController::class);
         Route::resource('order', \App\Http\Controllers\Admin\OrdersController::class);
+        Route::resource('film-reviews', FilmReviewController::class);
 
         // cinema rooms
         Route::prefix('cinemas')->group(function () {

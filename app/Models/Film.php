@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\TraitsHasAudit;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Prettus\Repository\Contracts\Transformable;
@@ -45,5 +46,15 @@ class Film extends Model implements Transformable
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(SchedulePublishFilm::class,'film_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(FilmReview::class, 'film_id', 'id');
     }
 }
