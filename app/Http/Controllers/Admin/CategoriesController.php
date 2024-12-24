@@ -200,8 +200,7 @@ class CategoriesController extends Controller
             DB::commit();
             toastr()->success('Cập nhật loại phim thành công');
             return redirect()->route('admin.category.index');
-
-        } catch (ValidatorException $e) {
+         } catch (ValidatorException $e) {
             DB::rollBack();
             Log::error($e->getMessage());
 
