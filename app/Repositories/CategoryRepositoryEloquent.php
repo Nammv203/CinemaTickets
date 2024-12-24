@@ -45,4 +45,12 @@ class CategoryRepositoryEloquent extends BaseRepository implements CategoryRepos
         $this->pushCriteria(app(RequestCriteria::class));
     }
     
+    public function getList($request)
+    {
+        return $this->model->when($request->keyword, function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->keyword}%");
+            })
+            ->orderBy($request->sort ?? 'created_at', $request->order ?? 'desc')
+            ->paginate($request->limit ?? 10);
+    }
 }

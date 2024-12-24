@@ -9,6 +9,7 @@ use App\Http\Requests\FilmUpdateRequest;
 use App\Repositories\CategoryRepository;
 use App\Repositories\FilmRepository;
 use App\Validators\FilmValidator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -54,10 +55,11 @@ class FilmsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $films = $this->repository->with('category')->all();
+        //        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+        $films = $this->repository->getList($request);
+        $categories = $this->categoryRepository->all();
 
         if (request()->wantsJson()) {
             return response()->json([
@@ -65,7 +67,7 @@ class FilmsController extends Controller
             ]);
         }
 
-        return view('backend.films.index', compact('films'));
+        return view('backend.films.index', compact('films','categories'));
     }
 
     /**

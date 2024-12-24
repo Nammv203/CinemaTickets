@@ -4,17 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\TicketRepository;
-use App\Models\Ticket;
-use App\Validators\TicketValidator;
+use App\Repositories\TicketOrderItemRepository;
+use App\Models\TicketOrderItem;
+use App\Validators\TicketOrderItemValidator;
 
 /**
- * Class TicketRepositoryEloquent.
+ * Class TicketOrderItemRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class TicketRepositoryEloquent extends BaseRepository implements TicketRepository
-{
+class  TicketOrderItemRepositoryEloquent extends BaseRepository implements  TicketOrderItemRepository{
     /**
      * Specify Model class name
      *
@@ -22,7 +21,7 @@ class TicketRepositoryEloquent extends BaseRepository implements TicketRepositor
      */
     public function model()
     {
-        return Ticket::class;
+        return TicketOrderItem::class;
     }
 
     
