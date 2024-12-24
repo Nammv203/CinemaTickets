@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Website\CategoriesController as CategoriesWebsiteController;
 use App\Http\Controllers\Website\OrdersController as OrderWebsiteController;
 use App\Http\Controllers\Website\UsersController as UserWebsiteController;
+use App\Http\Controllers\Website\UsersController as UserWebsiteController;
 use App\Http\Controllers\Admin\FilmsController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\CinemaRoomChairsController;
 use App\Http\Controllers\Admin\FilmReviewController;
 use App\Http\Controllers\Admin\SchedulePublishFilmsController;
 use App\Http\Controllers\Website\SchedulePublishFilmsController as SchedulePublishFilmsWebsiteController;
+use App\Http\Controllers\Website\SchedulePublishFilmsController as SchedulePublishFilmsWebsiteController;
 
 Route::group([
     'prefix' => '/'
@@ -26,6 +28,11 @@ Route::group([
         Route::get('/', [HomeController::class, 'index'])->name('home');
         Route::get('/movie-categories', [CategoriesWebsiteController::class, 'index'])->name('categories');
         Route::get('/movie-detail/{id}', [CategoriesWebsiteController::class, 'showDetail'])->name('movies.detail');
+        Route::get('/movie-booking/{id}', [SchedulePublishFilmsWebsiteController::class, 'showBookingPage'])->name('movies.booking');
+        Route::get('/movie-booking/{schedule_id}/seat', [SchedulePublishFilmsWebsiteController::class, 'showSeatBookingPage'])->name('movies.seat_booking');
+
+        // post checkout btn
+        Route::post('/checkout',[\App\Http\Controllers\Website\TicketsController::class, 'checkAuthAfterCheckout'])->name('postCheckout');
         Route::get('/movie-booking/{id}', [SchedulePublishFilmsWebsiteController::class, 'showBookingPage'])->name('movies.booking');
         Route::get('/movie-booking/{schedule_id}/seat', [SchedulePublishFilmsWebsiteController::class, 'showSeatBookingPage'])->name('movies.seat_booking');
 
@@ -124,6 +131,8 @@ Route::group([
             Route::put('/{schedule_id}',[ SchedulePublishFilmsController::class,'update'])->name('schedule.update');
             Route::get('/{schedule_id}',[ SchedulePublishFilmsController::class,'show'])->name('schedule.show');
             Route::delete('/{schedule_id}',[ SchedulePublishFilmsController::class,'destroy'])->name('schedule.destroy');
+
+            Route::get('/room-map/{schedule_id}',[ SchedulePublishFilmsController::class,'showRoomMap'])->name('schedule.room.map');
 
             Route::get('/room-map/{schedule_id}',[ SchedulePublishFilmsController::class,'showRoomMap'])->name('schedule.room.map');
         });

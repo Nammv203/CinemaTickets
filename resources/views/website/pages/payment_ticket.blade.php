@@ -19,12 +19,12 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12">
-					<div class="st_bt_top_back_btn float_left">	<a href="{{route('client.movies.seat_booking')}}"><i class="fas fa-long-arrow-alt-left"></i> &nbsp;Back</a>
+					<div class="st_bt_top_back_btn float_left">	<a style="cursor: pointer" onclick="history.back()"><i class="fas fa-long-arrow-alt-left"></i> &nbsp;Trở lại</a>
 					</div>
 				</div>
 				<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
 					<div class="st_bt_top_center_heading float_left">
-						<h3>Aquaman - English - (2:47)</h3>
+						<h3>{{$schedule?->film?->name}} - ({{$schedule->film?->time_duration}}) phút </h3>
 					</div>
 				</div>
 			</div>
@@ -41,13 +41,13 @@
 							<div class="col-md-12">
 								<div class="st_dtts_ineer_box float_left">
 									<ul>
-										<li><span class="dtts1">Date</span>  <span class="dtts2">19-Dec-2022</span>
+										<li><span class="dtts1">Ngày chiếu</span>  <span class="dtts2">{{$schedule->show_time}} - {{$schedule->show_date}}</span>
 										</li>
-										<li><span class="dtts1">Time</span>  <span class="dtts2">10:00PM</span>
+										<li><span class="dtts1">Thời lượng</span>  <span class="dtts2">{{$schedule->film?->time_duration}} phút</span>
 										</li>
-										<li><span class="dtts1">Theater</span>  <span class="dtts2">Ariesplex SL Cinemas</span>
+										<li><span class="dtts1">Rạp chiếu</span>  <span class="dtts2">{{$schedule->cinemaRoom?->cinema?->name}}</span>
 										</li>
-										<li><span class="dtts1">Seat</span>  <span class="dtts2">PLATINUM - PB7, PB8 (2 Tickets) </span>
+										<li><span class="dtts1">Phòng-Chỗ ngồi</span>  <span class="dtts2">P{{$schedule->cinemaRoom?->room_code}} - {{$ticketString}} ({{$totalTicket}} Vé) </span>
 										</li>
 									</ul>
 								</div>
@@ -55,28 +55,35 @@
 							<div class="col-md-12">
 								<div class="st_cherity_section float_left">
 									<div class="st_cherity_img float_left">
-										<img src="{{asset('assets-website')}}/images/content/cc1.jpg" alt="img">
+										<img src="{{ asset(config('filesystems.folder_storage_user.film')) . '/' . $schedule?->film?->picture}}" alt="img">
 									</div>
 									<div class="st_cherity_img_cont float_left">
 										<div class="box">
 											<p class="cc_pc_color1">
-												<input type="checkbox" id="c201" name="cb">
-												<label for="c201"><span>ADD Rs. 2</span> to your transaction as a donation. (Uncheck if you do not wish to donate)</label>
+												<input type="checkbox" id="c201" name="term_condition">
+												<label for="c201">Bạn đồng ý với điều khoản của trang web.</label>
 										</div>
 									</div>
 								</div>
 							</div>
 							<div class="col-md-12">
 								<div class="st_cherity_btn float_left">
-									<h3>SELECT TICKET TYPE</h3>
+									<h3></h3>
 									<ul>
-										<li><a href="#"><i class="flaticon-tickets"></i> &nbsp;M-Ticket</a>
-										</li>
-										<li><a href="#"><i class="flaticon-tickets"></i> &nbsp;Box office Pickup </a>
-										</li>
-										<li><a href="{{route('client.movies.show.confirm-payment')}}">Proceed to Pay </a>
+{{--										<li><a href="#"><i class="flaticon-tickets"></i> &nbsp;M-Ticket</a>--}}
+{{--										</li>--}}
+{{--										<li><a href="#"><i class="flaticon-tickets"></i> &nbsp;Box office Pickup </a>--}}
+{{--										</li>--}}
+										<li><a style="cursor: pointer" id="btn-payment">Tiếp tục thanh toán</a>
 										</li>
 									</ul>
+
+                                    <form style="display: none" action="{{route('auth.client.movies.postCheckoutPayment')}}" method="post" id="form-data-payment">
+                                        @csrf
+                                        @method('POST')
+                                        <input type="hidden" name="schdule_id" value="{{$schedule->id}}">
+                                        <input type="hidden" name="grand_total" value="{{$netPrice}}">
+                                    </form>
 								</div>
 							</div>
 						</div>
@@ -87,25 +94,37 @@
 						<div class="col-md-12">
 							<div class="st_dtts_bs_wrapper float_left">
 								<div class="st_dtts_bs_heading float_left">
-									<p>Booking summary</p>
+									<p>Tổng quan đơn hàng</p>
 								</div>
 								<div class="st_dtts_sb_ul float_left">
 									<ul>
-										<li>Platinum - PB7, PB8
-											<br>( 2 Tickets ) AUDI-5 <span>Rs . 790.00</span>
+                                        <li>Giá mỗi vé
+                                            <br>
+                                            <span>{{number_format($schedule->ticket_price)}}đ</span>
+                                        </li>
+										<li>P{{$schedule->cinemaRoom?->room_code}} - {{$ticketString}}
+											<br>( {{$totalTicket}} Vé ) <span>{{number_format($schedule->ticket_price * $totalTicket)}}đ</span>
 										</li>
-										<li>Internet handling fees <span>Rs.70.80</span>
+                                        <li>Giá vé hạng ghế
+											<br>
+                                            <span>{{number_format($sumChairTypePrice)}}đ</span>
+										</li>
+										<li>Ghi chú bảng giá ghế *<span></span>
 										</li>
 									</ul>
-									<p>Booking Fees <span>Rs.60.00</span>
+									<p>Hạng ghế A <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_A}}</span>
 									</p>
-									<p>Integrated GST (IGST) @ 18% <span>Rs.60.00</span>
-									</p>
+                                    <p>Hạng ghế B <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_B}}</span>
+                                    </p>
+                                    <p>Hạng ghế C <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_C}}</span>
+                                    </p>
+                                    <p>Hạng ghế D <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_D}}</span>
+                                    </p>
 								</div>
 								<div class="st_dtts_sb_h2 float_left">
-									<h3>Sub total <span>Rs.860.80</span></h3>
-									<h4>Current State is <span>Kerala</span></h4>
-									<h5>Payable Amount <span>Rs.860.80</span></h5>
+									<h3>Tổng phụ <span>{{number_format($netPrice)}}đ</span></h3>
+									<h4>Current State is <span>Vietnam</span></h4>
+									<h5>Giá phải thanh toán <span>{{number_format($netPrice)}}đ</span></h5>
 								</div>
 							</div>
 						</div>
@@ -120,18 +139,18 @@
 	<script>
 		//* Isotope js
 		    function protfolioIsotope(){
-		        if ( $('.st_fb_filter_left_box_wrapper').length ){ 
+		        if ( $('.st_fb_filter_left_box_wrapper').length ){
 		            // Activate isotope in container
 		            $(".protfoli_inner, .portfoli_inner").imagesLoaded( function() {
 		                $(".protfoli_inner, .portfoli_inner").isotope({
-		                    layoutMode: 'masonry',  
-		                }); 
-		            });  
-		            
-		            // Add isotope click function 
+		                    layoutMode: 'masonry',
+		                });
+		            });
+
+		            // Add isotope click function
 		            $(".protfoli_filter li").on('click',function(){
 		                $(".protfoli_filter li").removeClass("active");
-		                $(this).addClass("active"); 
+		                $(this).addClass("active");
 		                var selector = $(this).attr("data-filter");
 		                $(".protfoli_inner, .portfoli_inner").isotope({
 		                    filter: selector,
@@ -142,11 +161,11 @@
 		                    }
 		                });
 		                return false;
-		            });  
+		            });
 		        };
-		    }; 
-		 protfolioIsotope (); 
-		 
+		    };
+		 protfolioIsotope ();
+
 		  function changeQty(increase) {
 				            var qty = parseInt($('.select_number').find("input").val());
 				            if (!isNaN(qty)) {
@@ -156,6 +175,19 @@
 				                $('.select_number').find("input").val(1);
 				            }
 				        }
+
+        // handle button checkout
+        $(document).ready(function () {
+            $('#btn-payment').click(function () {
+                if(!$('input[name="term_condition"]').is(':checked')){
+                    alert('Hãy đồng ý với điều khoản của trang web trước!')
+                    return
+                }
+
+                // send data to backend
+                $('form#form-data-payment').submit();
+            })
+        })
 	</script>
 </body>
 

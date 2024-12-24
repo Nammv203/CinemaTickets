@@ -43,6 +43,7 @@ class Cinema extends Model implements Transformable
 
     public function location_province()
     {
+
         return $this->hasManyThrough(
             LocationProvince::class,
             LocationDistrict::class,
@@ -51,5 +52,6 @@ class Cinema extends Model implements Transformable
             'location_id',
             'province_id'
         );
+
     }
 }

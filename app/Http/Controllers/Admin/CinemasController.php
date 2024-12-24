@@ -78,7 +78,9 @@ class CinemasController extends Controller
     }
 
     public function create(){
+
         $provinces = $this->provinceRepository->with('location_districts')->all();
+
         return view('backend.cinemas.create', compact('provinces'));
     }
 
@@ -93,6 +95,7 @@ class CinemasController extends Controller
      */
     public function store(CinemaCreateRequest $request)
     {
+
         DB::beginTransaction();
         try {
             $data = $request->all();
@@ -136,6 +139,7 @@ class CinemasController extends Controller
             toastr()->error('Lỗi! Hãy liên hệ người quản lý');
             return redirect()->back()->withErrors($e->getMessageBag())->withInput();
         }
+
     }
 
     /**
@@ -157,6 +161,7 @@ class CinemasController extends Controller
         }
 
         return view('cinemas.show', compact('cinema'));
+
     }
 
     /**
@@ -175,6 +180,7 @@ class CinemasController extends Controller
         $districtWithCinema = $this->provinceRepository->with('location_districts')->findByField('id', $cinema->location_district->province_id);
 
         return view('backend.cinemas.edit', compact('cinema', 'provinces', 'districtWithCinema'));
+        
     }
 
     /**
@@ -189,6 +195,7 @@ class CinemasController extends Controller
      */
     public function update(CinemaUpdateRequest $request, $id)
     {
+
         DB::beginTransaction();
         try {
             $data = $request->all();
@@ -225,6 +232,7 @@ class CinemasController extends Controller
             DB::commit();
             toastr()->success('Cập nhật rạp phim thành công');
 
+
             return redirect()->route('admin.cinema.index');
         } catch (ValidatorException $e) {
             DB::rollBack();
@@ -236,6 +244,7 @@ class CinemasController extends Controller
                     'message' => $e->getMessageBag()
                 ]);
             }
+
 
             toastr()->error('Lỗi! Hãy liên hệ admin');
             return redirect()->back()->withErrors($e->getMessageBag())->withInput();
@@ -252,6 +261,7 @@ class CinemasController extends Controller
      */
     public function destroy($id)
     {
+
         $cinema = $this->repository->find($id);
 
         $checkFileIsset = Storage::exists(config('filesystems.folder_storage_admin.cinema') . $cinema->picture);
@@ -273,7 +283,8 @@ class CinemasController extends Controller
 
         return redirect()->back()->with('message', 'Cinema deleted.');    }
 
-    public function getDistrictWithProvince($id){
+  
+        public function getDistrictWithProvince($id){
         $data = $this->provinceRepository->with('location_districts')->find($id);
 
         return response()->json($data);

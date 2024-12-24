@@ -25,6 +25,14 @@ trait TraitsHasAudit
                 $model->save();
             }
         });
+
+        static::created(function ($model) {
+            // create ticket_number in ticket_orders
+            if($model->table == 'ticket_orders'){
+                $model->ticket_number = str_pad($model->id, 6, '0', STR_PAD_LEFT);
+                $model->save();
+            }
+        });
     }
 
     /**

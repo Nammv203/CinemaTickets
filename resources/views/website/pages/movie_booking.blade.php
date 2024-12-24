@@ -1,47 +1,61 @@
 @extends('website.layouts.bookings')
 @section('page-title','Movie Booking')
+@section('banner-title','Movie Booking')
 @section('page-content')
+
+    <style>
+        .btn-show-detail {
+            background-color: black !important;
+        }
+
+        .custom-modal-size {
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 600px;
+        }
+
+        .st_video_slider_inner_wrapper {
+            /*  */
+        }
+    </style>
+
 <!-- prs video top Start -->
 <div class="prs_booking_main_div_section_wrapper">
 	<div class="prs_top_video_section_wrapper">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-					<div class="st_video_slider_inner_wrapper float_left">
-						<div class="st_video_slider_overlay"></div>
-						<div class="st_video_slide_sec float_left">
-							<a rel='external' href='https://www.youtube.com/embed/ryzOXAO0Ss0' title='title' class="test-popup-link">
-								<img src="{{asset('assets-website')}}/images/index_III/icon.png" alt="img">
-							</a>
-							<h3>Aquaman</h3>
-							<p>ENGLISH, HINDI, TAMIL</p>
-							<h4>ACTION | Adventure | Fantasy</h4>
-							<h5><span>2d</span> <span>3d</span> <span>D 4DX</span> <span>Imax 3D</span></h5>
-						</div>
-						<div class="st_video_slide_social float_left">
-						<div class="st_slider_rating_btn_heart st_slider_rating_btn_heart_5th">
-								<h5><i class="fa fa-heart"></i> 85%</h5>
-								<h4>52,291 votes</h4>
-							</div>
-							<div class="st_video_slide_social_left float_left">
-								<ul>
-									<li><a href="#"><i class="fa fa-facebook-f"></i></a>
-									</li>
-									<li><a href="#"><i class="fa fa-twitter"></i></a>
-									</li>
-									<li><a href="#"><i class="fa fa-linkedin"></i></a>
-									</li>
-									<li><a href="#"><i class="fa fa-youtube"></i></a>
-									</li>
-								</ul>
-							</div>
-							<div class="st_video_slide_social_right float_left">
-								<ul>
-									<li data-animation="animated fadeInUp" class=""><i class="far fa-calendar-alt"></i> 14 Dec, 2022</li>
-									<li data-animation="animated fadeInUp" class=""><i class="far fa-clock"></i> 2 hrs 23 mins</li>
-								</ul>
-							</div>
-						</div>
+					<div class="st_video_slider_inner_wrapper float_left"
+                         style="background-image: url('{{ asset(config('filesystems.folder_storage_user.film') . $film->picture) }}')">
+                        <div class="st_video_slider_overlay"></div>
+                        <div class="st_video_slide_sec float_left">
+                            <button type="button" class="btn btn-lg btn-show-detail" data-toggle="modal"
+                                    data-target="#modal-show-detail">
+                                <img src="{{ asset('assets-website') }}/images/index_III/icon.png" alt="img"
+                                     class="text-black">
+                            </button>
+                            <h3>{{ $film->name }}</h3>
+                            <h4>{{$film->category?->name}}</h4>
+                        </div>
+                        <div class="st_video_slide_social float_left">
+                            <div class="st_video_slide_social_right float_left">
+                                <ul>
+                                    <li data-animation="animated fadeInUp" class="">
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ \Carbon\Carbon::parse($film->publish_at)->format('d/m/Y') }}
+                                    </li>
+
+                                    <li data-animation="animated fadeInUp" class="">
+                                        <i class="far fa-clock"></i>
+                                        {{ $film->time_duration }} phút
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 					</div>
 				</div>
 			</div>
@@ -53,25 +67,41 @@
 		<div class="container">
 			<div class="st_calender_tabs">
 				<ul class="nav nav-tabs">
-					<li class="active"> <a data-toggle="tab" href="#home"><span>WED</span> <br> 19</a>
-					</li>
-					<li class="nav-item">
-						<a data-toggle="tab" href="#menu1"> <span>THU</span> 
-							<br>20</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#menu2"> <span>FRI</span> 
-							<br>21</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#menu3"> <span>SAT</span> 
-							<br>22</a>
-					</li>
-					<li>
-						<a data-toggle="tab" href="#menu4"> <span>SUN</span> 
-							<br>23</a>
-					</li>
+
+                    @php $key = 0; @endphp
+                    @foreach($schedules as $date => $schedule)
+
+                        <li class="{{$key == 0 ? 'active' : ''}}">
+                            <a data-toggle="tab" href="#tab-{{$key}}">
+                                <span>{{get_date_d($date)}}</span>
+                                <br> {{ \Carbon\Carbon::parse($date)->format('d-m') }}
+                            </a>
+                        </li>
+
+                        @php $key ++ @endphp
+                    @endforeach
+
 				</ul>
+{{--                <ul class="nav nav-tabs">--}}
+{{--                    <li class="active"> <a data-toggle="tab" href="#home"><span>WED</span> <br> 19</a>--}}
+{{--                    </li>--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a data-toggle="tab" href="#menu1"> <span>THU</span>--}}
+{{--                            <br>20</a>--}}
+{{--                    </li>--}}
+{{--                    <li>--}}
+{{--                        <a data-toggle="tab" href="#menu2"> <span>FRI</span>--}}
+{{--                            <br>21</a>--}}
+{{--                    </li>--}}
+{{--                    <li>--}}
+{{--                        <a data-toggle="tab" href="#menu3"> <span>SAT</span>--}}
+{{--                            <br>22</a>--}}
+{{--                    </li>--}}
+{{--                    <li>--}}
+{{--                        <a data-toggle="tab" href="#menu4"> <span>SUN</span>--}}
+{{--                            <br>23</a>--}}
+{{--                    </li>--}}
+{{--                </ul>--}}
 			</div>
 		</div>
 	</div>
@@ -85,1300 +115,92 @@
 						<div class="row">
 							<div class="col-md-12">
 								<div class="tab-content">
-									<div id="home" class="tab-pane active">
+                                    @if(!count($schedules))
+                                        Phim chưa lên lịch chiếu
+                                    @endif
+{{--                                    mapping lich chieu theo ngay --}}
+                                    @php $key = 0; @endphp
+                                    @foreach($schedules as $date => $schedule)
+
+									    <div id="tab-{{$key}}" class="tab-pane {{$key === 0 ? 'active' : ''}}">
 										<div class="st_calender_contant_main_wrapper float_left">
-											<div class="st_calender_row_cont float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ariesplex SL Cinemas</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">10:00 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Artech Mall,<br> 
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Greenfield, <br>
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Mall Of Travancore
-(Red Carpet)</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Dhanya Remya: Trivandrum</h3>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>JV Cinemas: Kattakkada</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>MT Cineplex 4K Dolby 
-ATMOS: Pothencode</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>SPI: Kripa Cinemas - 
-Mahathma Gandhi Road</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 st_calender_row_cont_last float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ganga Cine house
-4K Dolby Atmos: Attingal</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
+
+{{--                                            mapping lich chieu theo gio trong ngay --}}
+                                            @foreach($schedule as $cinemaName => $schs)
+                                                <div class="st_calender_row_cont float_left">
+                                                    <div class="st_calender_asc">
+                                                        <div class="st_calen_asc_heart">
+                                                            <a href="#">
+                                                                <i class="fa fa-heart"></i>
+                                                            </a>
+                                                        </div>
+                                                        <div class="st_calen_asc_heart_cont">
+                                                            <h3>{{ $cinemaName }}</h3>
+                                                            <ul>
+                                                                <li>
+                                                                    <img src="{{asset('assets-website')}}/images/content/fast-food.png">
+                                                                </li>
+                                                                <li>
+                                                                    <img src="{{asset('assets-website')}}/images/content/bill.png">
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="st_calen_asc_tecket_time_select">
+                                                        <ul>
+
+                                                            @foreach($schs as $sch)
+                                                                <li>
+                                                                <span>
+                                                                    <h4>{{$sch[0]?->ticket_price ? number_format($sch[0]?->ticket_price) : 0}} đ</h4>
+                                                                    <p class="asc_pera1">Giá vé (chưa cộng hạng ghế)</p>
+                                                                    <p class="asc_pera2">Filling Fast</p>
+                                                                </span>
+                                                                    <a href="{{route('auth.client.movies.seat_booking',['schedule_id'=>$sch[0]?->id])}}">{{$sch[0]?->show_time}}</a>
+                                                                </li>
+                                                            @endforeach
+
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                            @endforeach
+
 										</div>
 									</div>
-									<div id="menu1" class="tab-pane fade">
-										<div class="st_calender_contant_main_wrapper float_left">
-											<div class="st_calender_row_cont float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ariesplex SL Cinemas</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">10:00 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Artech Mall,<br> 
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Greenfield, <br>
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Mall Of Travancore
-(Red Carpet)</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Dhanya Remya: Trivandrum</h3>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="#">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 st_calender_row_cont_last float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ganga Cine house
-4K Dolby Atmos: Attingal</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div id="menu2" class="tab-pane fade">
-										<div class="st_calender_contant_main_wrapper float_left">
-											<div class="st_calender_row_cont float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ariesplex SL Cinemas</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">10:00 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Artech Mall,<br> 
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Greenfield, <br>
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 st_calender_row_cont_last float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ganga Cine house
-4K Dolby Atmos: Attingal</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div id="menu3" class="tab-pane fade">
-										<div class="st_calender_contant_main_wrapper float_left">
-											<div class="st_calender_row_cont float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ariesplex SL Cinemas</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">10:00 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Artech Mall,<br> 
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Greenfield, <br>
-Trivandrum</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Carnival: Mall Of Travancore
-(Red Carpet)</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Dhanya Remya: Trivandrum</h3>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>JV Cinemas: Kattakkada</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>MT Cineplex 4K Dolby 
-ATMOS: Pothencode</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>SPI: Kripa Cinemas - 
-Mahathma Gandhi Road</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/ticket.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 st_calender_row_cont_last float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ganga Cine house
-4K Dolby Atmos: Attingal</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="#">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div id="menu4" class="tab-pane fade">
-										<div class="st_calender_contant_main_wrapper float_left">
-											<div class="st_calender_row_cont float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ariesplex SL Cinemas</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/bill.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">10:00 PM</a>
-														</li>
-													</ul>
-												</div>
-											</div>
-											<div class="st_calender_row_cont st_calender_row_cont2 st_calender_row_cont_last float_left">
-												<div class="st_calender_asc">
-													<div class="st_calen_asc_heart"><a href="#">	<i class="fa fa-heart"></i></a>
-													</div>
-													<div class="st_calen_asc_heart_cont">
-														<h3>Ganga Cine house
-4K Dolby Atmos: Attingal</h3>
-														<ul>
-															<li>
-																<img src="{{asset('assets-website')}}/images/content/fast-food.png">
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div class="st_calen_asc_tecket_time_select">
-													<ul>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">11:30 AM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">02:45 PM</a>
-														</li>
-														<li>	<span>
-															<h4>Rs.160.00</h4>
-															<p class="asc_pera1">Executive</p>
-															<p class="asc_pera2">Filling Fast</p>
-															</span>
-															<a href="{{route('client.movies.seat_booking')}}">06:30 PM</a>
-														</li>
-													</ul>
-													<p class="asc_bottom_pera">Cancellation Available</p>
-												</div>
-											</div>
-										</div>
-									</div>
+
+                                        @php $key ++ @endphp
+                                    @endforeach
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-					<div class="prs_mcc_left_side_wrapper">
-						<div class="prs_mcc_left_searchbar_wrapper">
-							<input type="text" placeholder="Search Movie">
-							<button><i class="flaticon-tool"></i>
-							</button>
-						</div>
-						<div class="prs_mcc_bro_title_wrapper">
-							<h2>browse title</h2>
-							<ul>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">All <span>23,124</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Action <span>512</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Romantic <span>548</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Love <span>557</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Musical <span>554</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Drama <span>567</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Thriller <span>689</span></a> 
-								</li>
-								<li><i class="fa fa-caret-right"></i> &nbsp;&nbsp;&nbsp;<a href="#">Horror <span>478</span></a> 
-								</li>
-							</ul>
-						</div>
-						<div class="prs_mcc_event_title_wrapper">
-							<h2>Top Events</h2>
-							<img src="{{asset('assets-website')}}/images/content/movie_category/event_img.jpg" alt="event_img">
-							<h3><a href="#">Music Event in india</a></h3>
-							<p>Pune <span><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i></span>
-							</p>
-							<h4>June 07 <span>08:00-12:00 pm</span></h4>
-						</div>
-					</div>
+                    {{get_sidebar()}}
 				</div>
 			</div>
 		</div>
 	</div>
 	</div>
+
+    <!-- Large modal show trailer-->
+    <div class="modal fade" id="modal-show-detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog custom-modal-size" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe width="100%" height="100%"
+                            src="{{ str_replace('watch?v=', 'embed/', $film->trailer_youtube_link) }}?controls=0"
+                            title="YouTube video player" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

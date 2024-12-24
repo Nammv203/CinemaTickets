@@ -15,6 +15,7 @@ class LogoutController extends Controller
         $request->session()->regenerateToken();
 
         toastr()->success('Đăng xuất thành công.');
-        return redirect()->route('home');
+        return redirect()->route('client.home');
     }
-}
+};
+

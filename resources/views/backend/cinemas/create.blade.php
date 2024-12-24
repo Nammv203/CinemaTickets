@@ -1,3 +1,4 @@
+@@ -0,0 +1,163 @@
 @extends('backend.layouts.app')
 @section('content-page')
     <!-- start page title -->
@@ -55,15 +56,6 @@
                                     </div>
 
                                     <div class="form-group mb-3">
-                                        <label class="form-label">Mã rạp phim</label>
-                                        <input type="text" class="form-control mb-1" name="cinema_code"
-                                               value="{{ old('cinema_code') }}">
-                                        @error('cinema_code')
-                                        <span class="text-danger">{{ $errors->first('cinema_code') }}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mb-3">
                                         <label class="form-label">Chọn tỉnh</label>
                                         <select class="form-select" name="province" value="{{ old('province') }}"
                                             id="province">
@@ -91,14 +83,10 @@
 
                                     <div class="form-group mb-3">
                                         <label class="form-label">Ảnh</label>
-                                        <input type="file" class="form-control mb-1" name="picture" id="pictureInput">
+                                        <input type="file" class="form-control mb-1" name="picture">
                                         @error('picture')
                                             <span class="text-danger">{{ $errors->first('picture') }}</span>
                                         @enderror
-
-                                        <img id="previewImage" src="" alt="Vui lòng chọn ảnh" class="mt-3"
-                                            width="200" style="display: none">
-
                                     </div>
                                 </div>
 
@@ -132,9 +120,7 @@
 
                                 </div>
                             </div>
-                            <div>
-                                * Mặc định khi tạo 1 rạp phim, mỗi rạp sẽ được tạo sẵn 10 phòng chiếu.
-                            </div>
+
                             <button type="submit" class="btn btn-primary">Xác nhận</button>
                         </form>
                     </div>
@@ -147,20 +133,6 @@
 @push('script-stack')
     <script>
         $(document).ready(function() {
-
-            $('#pictureInput').on('change', function(event) {
-                const file = event.target.files[0];
-
-                if (file) {
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        $('#previewImage').attr('src', e.target.result).show();
-                    }
-
-                    reader.readAsDataURL(file);
-                }
-            });
 
             function get_district() {
                 $('#province').change(function() {
