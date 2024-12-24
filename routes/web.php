@@ -60,6 +60,7 @@ Route::group([
     });
 });
 
+
 Route::group([
     'middleware' => 'auth',
     'prefix' => 'auth'
@@ -154,3 +155,4 @@ Route::group([
 });
 
 Route::get('vnpay/return/{order_id}', [\App\Http\Controllers\Website\VnPayController::class,'vnpayReturn'])->name('vnpay.return');
+
