@@ -1,3 +1,4 @@
+@@ -0,0 +1,175 @@
 @extends('backend.layouts.app')
 @section('content-page')
     <!-- start page title -->
@@ -26,10 +27,6 @@
                         <div class="col-sm-5">
                             <a href="{{ route('admin.cinema.index') }}" class="btn btn-danger mb-2">
                                 Danh sách rạp phim
-                            </a>
-                            <a href="{{route('admin.cinema-rooms.index',['cinema_id'=>$cinema->id])}}" class="btn btn-info mb-2">
-                                Quản lý phòng phim
-                                <i class="mdi mdi-pencil text-white"></i>
                             </a>
                         </div>
                         <div class="col-sm-7">
@@ -60,21 +57,12 @@
                                     </div>
 
                                     <div class="form-group mb-3">
-                                        <label class="form-label">Mã rạp phim</label>
-                                        <input type="text" class="form-control mb-1" name="cinema_code"
-                                            value="{{ old('cinema_code', $cinema->cinema_code) }}">
-                                        @error('cinema_code')
-                                            <span class="text-danger">{{ $errors->first('cinema_code') }}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mb-3">
                                         <label class="form-label">Chọn tỉnh</label>
                                         <select class="form-select" name="province" value="{{ old('province') }}"
                                             id="province">
                                             @foreach ($provinces as $province)
                                                 <option value="{{ $province->id }}"
-                                                    {{ $province->id == $cinema->location_district->province_id ? 'selected' : '' }}>
+                                                    {{ $province->id == $cinema->location_province[0]->id ? 'selected' : '' }}>
                                                     {{ $province->province_name }}
                                                 </option>
                                             @endforeach
@@ -83,17 +71,20 @@
                                             <span class="text-danger">{{ $errors->first('province') }}</span>
                                         @enderror
                                     </div>
+                                    {{-- {{dd($provinces[$cinema->location_province[0]->id - 1])}} --}}
+                                    {{-- {{dd($cinema)}} --}}
 
                                     <div class="form-group mb-3">
                                         <label class="form-label">Chọn huyện</label>
                                         <select class="form-select" name="location_id" value="{{ old('location_id') }}"
                                             id="district">
 
-                                            @foreach ($districtWithCinema[0]->location_districts as $district)
+                                            @foreach ($provinces[$cinema->location_district->province_id - 1]->location_districts as $district)
                                                 <option value="{{ $district->id }}"
                                                     {{ $cinema->location_id == $district->id ? 'selected' : '' }}>
                                                     {{ $district->district_name }}
                                                 </option>
+
                                             @endforeach
 
                                         </select>
@@ -104,16 +95,10 @@
 
                                     <div class="form-group mb-3">
                                         <label class="form-label">Ảnh</label>
-                                        <input type="file" class="form-control mb-1" name="picture" id="pictureInput">
+                                        <input type="file" class="form-control mb-1" name="picture">
                                         @error('picture')
                                             <span class="text-danger">{{ $errors->first('picture') }}</span>
                                         @enderror
-
-                                        @if ($cinema->picture)
-                                            <img src="{{ asset(config('filesystems.folder_storage_user.cinema') . $cinema->picture) }}"
-                                                alt="Current Picture" class="img-thumbnail mt-3" alt="Vui lòng chọn ảnh"
-                                                width="200" id="previewImage">
-                                        @endif
                                     </div>
                                 </div>
 
@@ -160,19 +145,6 @@
 @push('script-stack')
     <script>
         $(document).ready(function() {
-            $('#pictureInput').on('change', function(event) {
-                const file = event.target.files[0];
-
-                if (file) {
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        $('#previewImage').attr('src', e.target.result).show();
-                    }
-
-                    reader.readAsDataURL(file);
-                }
-            });
 
             function get_district() {
                 $('#province').change(function() {
