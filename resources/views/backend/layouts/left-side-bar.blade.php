@@ -3,20 +3,22 @@
     <!-- Brand Logo Light -->
     <a href="" class="logo logo-light">
         <span class="logo-lg">
-            <img src="{{ asset('assets-backend/images/logo.png') }}" alt="logo">
+{{--            <img src="{{ asset('assets-backend/images/logo.png') }}" alt="logo">--}}
+            <img src="{{ asset('assets-website/images/header/logo.png') }}" alt="logo">
         </span>
         <span class="logo-sm">
-            <img src="{{ asset('assets-backend/images/logo-sm.png') }}" alt="small logo">
+{{--            <img src="{{ asset('assets-backend/images/logo-sm.png') }}" alt="small logo">--}}
+            <img src="{{ asset('assets-website/images/header/logo.png') }}" alt="logo">
         </span>
     </a>
 
     <!-- Brand Logo Dark -->
     <a href="" class="logo logo-dark">
         <span class="logo-lg">
-            <img src="{{ asset('assets-backend/images/logo-dark.png') }}" alt="dark logo">
+            <img src="{{ asset('assets-website/images/header/logo.png') }}" alt="logo">
         </span>
         <span class="logo-sm">
-            <img src="{{ asset('assets-backend/images/logo-dark-sm.png') }}" alt="small logo">
+            <img src="{{ asset('assets-website/images/header/logo.png') }}" alt="logo">
         </span>
     </a>
     <!-- Sidebar Hover Menu Toggle Button -->
@@ -107,6 +109,9 @@
                         <li>
                             <a href="{{ route('admin.film.index') }}">Quản lý phim</a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.film-reviews.index') }}">Quản lý đánh giá phim</a>
+                        </li>
                     </ul>
                 </div>
             </li>
@@ -136,14 +141,17 @@
                 <a data-bs-toggle="collapse" href="#sidebarTicket" aria-expanded="false"
                    aria-controls="sidebarTicket" class="side-nav-link">
                     <i class="ri-ticket-line"></i>
-                    <span> Quản lý vé đặt(dev*) </span>
+                    <span> Quản lý vé đặt</span>
                     <span class="menu-arrow"></span>
                 </a>
                 <div class="collapse" id="sidebarTicket">
                     <ul class="side-nav-second-level">
                         <li>
-                            <a href="#">Danh sách đặt vé</a>
+                            <a href="{{route('admin.order.index')}}">Danh sách đặt vé</a>
                         </li>
+{{--                        <li>--}}
+{{--                            <a href="{{route('admin.order.create')}}">Tạo vé</a>--}}
+{{--                        </li>--}}
                     </ul>
                 </div>
             </li>

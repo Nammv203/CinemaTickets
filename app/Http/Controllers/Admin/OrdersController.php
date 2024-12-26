@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Response;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderUpdateRequest;
-use App\Repositories\OrderRepository;
-use App\Validators\OrderValidator;
+use App\Models\Cinema;
+use App\Models\User;
+use App\Repositories\TicketOrderRepository;
+use Illuminate\Http\Request;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -19,25 +21,18 @@ use Prettus\Validator\Exceptions\ValidatorException;
 class OrdersController extends Controller
 {
     /**
-     * @var OrderRepository
+     * @var TicketOrderRepository
      */
     protected $repository;
 
     /**
-     * @var OrderValidator
-     */
-    protected $validator;
-
-    /**
      * OrdersController constructor.
      *
-     * @param OrderRepository $repository
-     * @param OrderValidator $validator
+     * @param TicketOrderRepository $repository
      */
-    public function __construct(OrderRepository $repository, OrderValidator $validator)
+    public function __construct(TicketOrderRepository $repository)
     {
         $this->repository = $repository;
-        $this->validator  = $validator;
     }
 
     /**
@@ -45,10 +40,33 @@ class OrdersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $orders = $this->repository->all();
+        $orders = $this->repository
+            ->when($request->cinema_id || $request->cinema_room_id, function ($query) use ($request) {
+                if($request->cinema_id)
+                {
+                    $query->whereHas('schedule', function ($query) use ($request) {
+                        $query->whereHas('cinemaRoom', function ($query) use ($request) {
+                           $query->whereHas('cinema', function ($query) use ($request) {
+                               $query->where('id', $request->cinema_id);
+                           })
+                           ->when($request->cinema_room_id, function ($query) use ($request) {
+                               $query->where('id', $request->cinema_room_id);
+                           });
+                        });
+                    });
+                }
+            })
+            ->when(isset($request->status), function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->when(!empty($request->id), function ($query) use ($request) {
+                $query->where('ticket_number','like', '%'.$request->id.'%');
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+        $cinemas = Cinema::all();
 
         if (request()->wantsJson()) {
 
@@ -57,7 +75,14 @@ class OrdersController extends Controller
             ]);
         }
 
-        return view('orders.index', compact('orders'));
+        return view('backend.orders.index', compact('orders','cinemas'));
+    }
+
+    public function create(Request $request)
+    {
+        $users = User::all();
+
+        return view('backend.orders.create', compact('users'));
     }
 
     /**
@@ -73,7 +98,7 @@ class OrdersController extends Controller
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+//            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
             $order = $this->repository->create($request->all());
 
@@ -87,8 +112,10 @@ class OrdersController extends Controller
                 return response()->json($response);
             }
 
+            toastr()->success(trans('Tạo thành công!'));
             return redirect()->back()->with('message', $response['message']);
         } catch (ValidatorException $e) {
+            toastr()->error(trans('Tạo thành thất bại!'));
             if ($request->wantsJson()) {
                 return response()->json([
                     'error'   => true,
@@ -118,7 +145,7 @@ class OrdersController extends Controller
             ]);
         }
 
-        return view('orders.show', compact('order'));
+        return view('backend.orders.show', compact('order'));
     }
 
     /**
@@ -132,7 +159,7 @@ class OrdersController extends Controller
     {
         $order = $this->repository->find($id);
 
-        return view('orders.edit', compact('order'));
+        return view('backend.orders.edit', compact('order'));
     }
 
     /**
@@ -149,23 +176,23 @@ class OrdersController extends Controller
     {
         try {
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+//            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
             $order = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'Order updated.',
+                'message' => 'Cập nhật thành công!',
                 'data'    => $order->toArray(),
             ];
 
             if ($request->wantsJson()) {
-
                 return response()->json($response);
             }
 
+            toastr()->success('Cập nhật thành công!');
             return redirect()->back()->with('message', $response['message']);
         } catch (ValidatorException $e) {
-
+            toastr()->error('Cập nhật thất bại!');
             if ($request->wantsJson()) {
 
                 return response()->json([
@@ -198,6 +225,7 @@ class OrdersController extends Controller
             ]);
         }
 
+        toastr()->success('Xóa thành công!');
         return redirect()->back()->with('message', 'Order deleted.');
     }
 }

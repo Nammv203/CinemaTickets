@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Admin\CinemaRoomsController;
 use App\Http\Controllers\Admin\CinemaRoomChairsController;
+use App\Http\Controllers\Admin\FilmReviewController;
 use App\Http\Controllers\Admin\SchedulePublishFilmsController;
 use App\Http\Controllers\Website\SchedulePublishFilmsController as SchedulePublishFilmsWebsiteController;
 
@@ -40,8 +41,13 @@ Route::group([
     Route::name('auth.')->group(function () {
         Route::get('/login', [LoginController::class, 'showLoginForm'])->name('showLoginForm');
         Route::post('/login', [LoginController::class, 'postLogin'])->name('postLogin');
+
         Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('showRegistrationForm');
         Route::post('/register', [RegisterController::class, 'postRegister'])->name('postRegister');
+
+        Route::get('verify/{token}', [RegisterController::class, 'showVerifyForm'])->name('showVerify');
+        Route::post('verify/{token}', [RegisterController::class, 'postVerify'])->name('postVerify');
+        Route::post('resend-verify/{token}', [RegisterController::class, 'resendEmailVerify'])->name('resendVerify');
     });
 });
 
@@ -56,6 +62,14 @@ Route::group([
         Route::get('/profile', [UserWebsiteController::class, 'index'])->name('profile');
         Route::patch('/profile', [UserWebsiteController::class, 'update'])->name('profile.update');
         Route::patch('/profile/change-password', [UserWebsiteController::class, 'updatePassword'])->name('profile.change-password');
+
+        // ticket purchase history
+        Route::get('/ticket-purchase-history', [OrderWebsiteController::class, 'ticketPurchaseHistory'])
+            ->name('ticket-purchase-history');
+
+        // ticket purchase history detail
+        Route::get('/ticket-purchase-history/{ticket}', [OrderWebsiteController::class, 'ticketPurchaseHistoryDetail'])
+        ->name('ticket-purchase-history-detail');
 
         // booking
         Route::name('client.')->group(function () {
@@ -78,10 +92,13 @@ Route::group([
 ], function () {
     Route::name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'showDashboard'])->name('dashboard');
+        Route::get('/total-monthly', [DashboardController::class, 'totalMonthly']);
+
         Route::resource('category', CategoriesController::class);
         Route::resource('film', FilmsController::class);
         Route::resource('cinema', CinemasController::class);
         Route::resource('order', \App\Http\Controllers\Admin\OrdersController::class);
+        Route::resource('film-reviews', FilmReviewController::class);
 
         // cinema rooms
         Route::prefix('cinemas')->group(function () {
@@ -124,3 +141,5 @@ Route::group([
         });
     });
 });
+
+Route::get('vnpay/return/{order_id}', [\App\Http\Controllers\Website\VnPayController::class,'vnpayReturn'])->name('vnpay.return');

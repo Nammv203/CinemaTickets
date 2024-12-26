@@ -86,7 +86,8 @@
                                     <div class="form-group mb-3">
                                         <label class="form-label">Ngày chiếu</label>
                                         <input type="date" class="form-control mb-1" name="show_date"
-                                               value="{{ $schedulePublishFilm->show_date }}">
+                                               value="{{ $schedulePublishFilm->show_date }}"
+                                               min="{{ \Carbon\Carbon::today()->addDay()->toDateString() }}">
                                         @error('show_date')
                                         <span class="text-danger">{{ $errors->first('show_date') }}</span>
                                         @enderror
@@ -143,9 +144,13 @@
                                 </div>
                             </div>
                             <div>
-                                * Mặc định khi tạo 1 rạp phim, mỗi rạp sẽ được tạo sẵn 10 phòng chiếu.
+{{--                                * Mặc định khi tạo 1 rạp phim, mỗi rạp sẽ được tạo sẵn 10 phòng chiếu.--}}
                             </div>
                             <button type="submit" class="btn btn-primary">Xác nhận</button>
+                            <a href="{{ route('admin.schedule.room.map',['schedule_id' => $schedulePublishFilm->id]) }}" class="btn btn-info">
+                                <span>Sơ đồ lịch chiếu</span>
+                                <i class="ri-ticket-2-line"></i>
+                            </a>
                         </form>
                     </div>
 
