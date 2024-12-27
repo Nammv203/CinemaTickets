@@ -237,6 +237,7 @@ class SchedulePublishFilmsController extends Controller
             ]);
         }
 
+        
         toastr()->success('Xóa thành công.');
 
         return redirect()->back()->with('message', 'SchedulePublishFilm deleted.');

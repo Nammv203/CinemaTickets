@@ -225,6 +225,7 @@ class OrdersController extends Controller
             ]);
         }
 
+        
         toastr()->success('Xóa thành công!');
         return redirect()->back()->with('message', 'Order deleted.');
     }

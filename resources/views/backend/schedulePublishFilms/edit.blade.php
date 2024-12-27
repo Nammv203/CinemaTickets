@@ -190,7 +190,8 @@
                 })
             }
 
-            // call function
+          
+            // call function 
             get_rooms_by_cinema();
         })
     </script>
