@@ -4,6 +4,13 @@
 
 <head>
 	@include('website.partials.head')
+
+    <style>
+        #btn-payment.active{
+            background: #ff4444;
+            color: #fff;
+        }
+    </style>
 </head>
 
 <body class="booking_type_back">
@@ -74,7 +81,12 @@
 {{--										</li>--}}
 {{--										<li><a href="#"><i class="flaticon-tickets"></i> &nbsp;Box office Pickup </a>--}}
 {{--										</li>--}}
-										<li><a style="cursor: pointer" id="btn-payment">Tiếp tục thanh toán</a>
+                                        <li>
+                                            <input type="radio" checked id="vnpay">
+                                            <label for="vnpay">VNPay</label>
+                                        </li>
+										<li>
+                                            <a style="cursor: pointer" id="btn-payment">Thanh toán</a>
 										</li>
 									</ul>
 
@@ -116,7 +128,7 @@
 									</p>
                                     <p>Hạng ghế B <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_B}}</span>
                                     </p>
-                                    <p>Hạng ghế C <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_C}}</span>
+                                    <p>Hạng ghế C (Ghế đôi) <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_C}}</span>
                                     </p>
                                     <p>Hạng ghế D <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_D}}</span>
                                     </p>
@@ -187,6 +199,15 @@
                 // send data to backend
                 $('form#form-data-payment').submit();
             })
+        })
+
+        // change active btn payment
+        $('input[name="term_condition"]').change(function () {
+            if($(this).is(':checked')){
+                $('#btn-payment').addClass('active');
+            }else{
+                $('#btn-payment').removeClass('active');
+            }
         })
 	</script>
 </body>

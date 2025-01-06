@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <br>
-                <p>* Mặc định khi tạo 1 phòng phim, mỗi phòng sẽ được tạo sẵn 80 ghế ngồi.</p>
+                <p>* Mặc định khi tạo 1 phòng phim, mỗi phòng sẽ được tạo sẵn {{ \App\Helpers\Constants::QTY_ROOM_CHAIRS }} ghế ngồi.</p>
                 <button type="submit" class="btn btn-primary">Xác nhận</button>
             </form>
         </div>
@@ -102,6 +102,7 @@
                                 <th>Tên rạp phim</th>
                                 <th>Mã rạp phim</th>
                                 <th>Mã phòng</th>
+                                <th>Số ghế</th>
                                 <th></th>
 
                                 <th class="table-action">Hành động</th>
@@ -114,6 +115,9 @@
                                     <td>{{ $room?->cinema?->name }}</td>
                                     <td>{{ $room?->cinema?->cinema_code }}</td>
                                     <td>{{ $room->room_code }}</td>
+                                    <td>
+                                        {{ $room->cinemaRoomChairs->count() }}
+                                    </td>
                                     <td>
                                         <a href="{{route('admin.rooms-chairs.index',['room_id'=>$room->id])}}"
                                            class="btn btn-info">Quản lý chỗ ngồi <i

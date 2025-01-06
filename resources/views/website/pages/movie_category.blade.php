@@ -131,33 +131,64 @@
                                             @endif
 
                                             @foreach($list_film as $film)
+
+                                                @php
+                                                    $avgStars = $film->reviews->avg('stars');
+                                                    $fullStars = floor($avgStars);
+                                                    $hasHalfStar = ($avgStars - $fullStars) >= 0.5;
+                                                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                                                @endphp
+
                                                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 prs_upcom_slide_first">
                                                     <div class="prs_upcom_movie_box_wrapper prs_mcc_movie_box_wrapper">
                                                         <div class="prs_upcom_movie_img_box">
                                                             <img
                                                                 src="{{asset('storage').'/film/'.$film->picture}}"
-                                                                alt="movie_img"/>
+                                                                alt="movie_img" height="250"/>
                                                             <div class="prs_upcom_movie_img_overlay"></div>
                                                             <div class="prs_upcom_movie_img_btn_wrapper">
                                                                 <ul>
-                                                                    <li><a href="#">Xem Trailer</a>
-                                                                    </li>
                                                                     <li><a href="{{route('client.movies.detail',['id'=>$film->id])}}">Xem Chi tiết</a>
                                                                     </li>
                                                                 </ul>
                                                             </div>
+                                                            @if($film->limit_age)
+                                                                <div class="limit-age-film" style="    height: 25px;
+                                                                                                    width: 50px;
+                                                                                                    background: red;
+                                                                                                    box-shadow: 0px 0px 0 2px #C98;
+                                                                                                    position: absolute;
+                                                                                                    top: 10px;
+                                                                                                    right: 15px;
+                                                                                                    border-radius: 3px;
+                                                                                                    display: flex;
+                                                                                                    justify-content: center;
+                                                                                                    align-items: center;
+                                                                                                    color: #fff;
+                                                                                                    font-weight: bold;">
+                                                                    T{{$film->limit_age}}
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="prs_upcom_movie_content_box">
                                                             <div class="prs_upcom_movie_content_box_inner">
-                                                                <h2><a href="#">{{$film->name}}</a></h2>
-                                                                <p>{{$film->category?->name}}</p>    <i
-                                                                    class="fa fa-star"></i>
-                                                                <i class="fa fa-star"></i>
-                                                                <i class="fa fa-star"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
+                                                                <h2>
+                                                                    <a href="{{route('client.movies.detail',['id'=>$film->id])}}" class="film-name">
+                                                                        {{$film->name}}
+                                                                    </a>
+                                                                </h2>
+                                                                <p>{{$film->category?->name}}</p>
+                                                                @for ($i = 0; $i < $fullStars; $i++)
+                                                                    <i class="fa fa-star"></i>
+                                                                @endfor
+                                                                @if ($hasHalfStar)
+                                                                    <i class="fas fa-star-half-alt"></i>
+                                                                @endif
+                                                                @for ($i = 0; $i < $emptyStars; $i++)
+                                                                    <i class="far fa-star"></i>
+                                                                @endfor
                                                             </div>
-                                                            <div class="prs_upcom_movie_content_box_inner_icon">
+                                                            <div class="prs_upcom_movie_content_box_inner_icon mt-2">
                                                                 <ul>
                                                                     <li><a href="{{route('client.movies.booking',['id' => $film->id])}}"><i
                                                                                 class="flaticon-cart-of-ecommerce"></i></a>
@@ -193,21 +224,55 @@
                                     <div id="list" class="tab-pane fade">
                                         <div class="row">
                                             @foreach($list_film as $film)
+
+                                                @php
+                                                    $avgStars = $film->reviews->avg('stars');
+                                                    $fullStars = floor($avgStars);
+                                                    $hasHalfStar = ($avgStars - $fullStars) >= 0.5;
+                                                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                                                @endphp
+
                                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                                     <div class="prs_mcc_list_movie_main_wrapper">
-                                                        <div class="prs_mcc_list_movie_img_wrapper">
+                                                        <div class="prs_mcc_list_movie_img_wrapper" style="position: relative">
                                                             <img
                                                                 src="{{asset('storage').'/film/'.$film->picture}}"
-                                                                alt="categoty_img">
+                                                                alt="categoty_img"
+                                                                class="img-fluid"
+                                                                height="360">
+
+                                                            @if($film->limit_age)
+                                                                <div class="limit-age-film" style="    height: 25px;
+                                                                                                    width: 50px;
+                                                                                                    background: red;
+                                                                                                    box-shadow: 0px 0px 0 2px #C98;
+                                                                                                    position: absolute;
+                                                                                                    top: 10px;
+                                                                                                    right: 15px;
+                                                                                                    border-radius: 3px;
+                                                                                                    display: flex;
+                                                                                                    justify-content: center;
+                                                                                                    align-items: center;
+                                                                                                    color: #fff;
+                                                                                                    font-weight: bold;">
+                                                                    T{{$film->limit_age}}
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="prs_mcc_list_movie_img_cont_wrapper">
                                                             <div class="prs_mcc_list_left_cont_wrapper">
                                                                 <h2>{{$film->name}}</h2>
-                                                                <p>{{$film->category?->nam}} &nbsp;&nbsp;&nbsp;<i
-                                                                        class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                                                        class="fa fa-star"></i><i
-                                                                        class="fa fa-star-o"></i><i
-                                                                        class="fa fa-star-o"></i>
+                                                                <p>{{$film->category?->nam}} &nbsp;&nbsp;&nbsp;
+
+                                                                @for ($i = 0; $i < $fullStars; $i++)
+                                                                    <i class="fa fa-star"></i>
+                                                                @endfor
+                                                                @if ($hasHalfStar)
+                                                                    <i class="fas fa-star-half-alt"></i>
+                                                                @endif
+                                                                @for ($i = 0; $i < $emptyStars; $i++)
+                                                                    <i class="far fa-star"></i>
+                                                                @endfor
                                                                 </p>
                                                                 <h4>Đạo diễn - {{$film->derector}}</h4>
                                                             </div>
@@ -244,6 +309,7 @@
 {{--                                                        <li><a href="#"><i class="flaticon-right-arrow"></i></a>--}}
 {{--                                                        </li>--}}
 {{--                                                    </ul>--}}
+
             {{$list_film->links()}}
                                                 </div>
                                             </div>
