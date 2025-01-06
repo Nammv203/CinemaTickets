@@ -9,6 +9,7 @@ use App\Http\Requests\OrderUpdateRequest;
 use App\Models\Cinema;
 use App\Models\User;
 use App\Repositories\TicketOrderRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -43,17 +44,17 @@ class OrdersController extends Controller
     public function index(Request $request)
     {
         $orders = $this->repository
+            ->with(['ticketOrderItems'])
             ->when($request->cinema_id || $request->cinema_room_id, function ($query) use ($request) {
-                if($request->cinema_id)
-                {
+                if ($request->cinema_id) {
                     $query->whereHas('schedule', function ($query) use ($request) {
                         $query->whereHas('cinemaRoom', function ($query) use ($request) {
-                           $query->whereHas('cinema', function ($query) use ($request) {
-                               $query->where('id', $request->cinema_id);
-                           })
-                           ->when($request->cinema_room_id, function ($query) use ($request) {
-                               $query->where('id', $request->cinema_room_id);
-                           });
+                            $query->whereHas('cinema', function ($query) use ($request) {
+                                $query->where('id', $request->cinema_id);
+                            })
+                                ->when($request->cinema_room_id, function ($query) use ($request) {
+                                    $query->where('id', $request->cinema_room_id);
+                                });
                         });
                     });
                 }
@@ -62,7 +63,19 @@ class OrdersController extends Controller
                 $query->where('status', $request->status);
             })
             ->when(!empty($request->id), function ($query) use ($request) {
-                $query->where('ticket_number','like', '%'.$request->id.'%');
+                $query->where('ticket_number', 'like', '%' . $request->id . '%');
+            })
+            ->when(!empty($request->start_date) || !empty($request->end_date), function ($query) use ($request) {
+                $startDate = $request->start_date ? Carbon::parse($request->start_date)->format('Y-m-d') : null;
+                $endDate = $request->end_date ? Carbon::parse($request->end_date)->format('Y-m-d') : null;
+
+                $query->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                })->when($startDate, function ($query) use ($startDate) {
+                    $query->where('created_at', '>=', $startDate);
+                })->when($endDate, function ($query) use ($endDate) {
+                    $query->where('created_at', '<=', $endDate);
+                });
             })
             ->orderBy('id', 'desc')
             ->paginate(10);
@@ -75,7 +88,7 @@ class OrdersController extends Controller
             ]);
         }
 
-        return view('backend.orders.index', compact('orders','cinemas'));
+        return view('backend.orders.index', compact('orders', 'cinemas'));
     }
 
     public function create(Request $request)
@@ -88,7 +101,7 @@ class OrdersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  OrderCreateRequest $request
+     * @param OrderCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      *
@@ -104,7 +117,7 @@ class OrdersController extends Controller
 
             $response = [
                 'message' => 'Order created.',
-                'data'    => $order->toArray(),
+                'data' => $order->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -118,7 +131,7 @@ class OrdersController extends Controller
             toastr()->error(trans('Tạo thành thất bại!'));
             if ($request->wantsJson()) {
                 return response()->json([
-                    'error'   => true,
+                    'error' => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -130,7 +143,7 @@ class OrdersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -151,7 +164,7 @@ class OrdersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -165,8 +178,8 @@ class OrdersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  OrderUpdateRequest $request
-     * @param  string            $id
+     * @param OrderUpdateRequest $request
+     * @param string $id
      *
      * @return Response
      *
@@ -182,7 +195,7 @@ class OrdersController extends Controller
 
             $response = [
                 'message' => 'Cập nhật thành công!',
-                'data'    => $order->toArray(),
+                'data' => $order->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -196,7 +209,7 @@ class OrdersController extends Controller
             if ($request->wantsJson()) {
 
                 return response()->json([
-                    'error'   => true,
+                    'error' => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -209,7 +222,7 @@ class OrdersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -225,7 +238,6 @@ class OrdersController extends Controller
             ]);
         }
 
-        
         toastr()->success('Xóa thành công!');
         return redirect()->back()->with('message', 'Order deleted.');
     }

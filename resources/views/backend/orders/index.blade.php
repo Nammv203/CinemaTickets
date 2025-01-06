@@ -36,15 +36,16 @@
 
                     <div class="row mb-3">
                         <div class="col-sm-3">
-{{--                            <a href="{{ route('admin.order.create') }}" class="btn btn-danger mb-2">--}}
-{{--                                <i class="mdi mdi-plus-circle me-2"></i>--}}
-{{--                                Thêm vé đặt--}}
-{{--                            </a>--}}
+                            {{--                            <a href="{{ route('admin.order.create') }}" class="btn btn-danger mb-2">--}}
+                            {{--                                <i class="mdi mdi-plus-circle me-2"></i>--}}
+                            {{--                                Thêm vé đặt--}}
+                            {{--                            </a>--}}
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-12">
                             <div class="text-sm-end">
                                 <form class="row row-cols-lg-auto g-3 align-items-end justify-content-end">
                                     <div class="col-12">
+                                        <label class="form-label">Rạp phim</label>
                                         <select id="cinema_id" class="form-select" name="cinema_id">
                                             <option value="">Chọn rạp phim</option>
                                             @foreach ($cinemas as $c)
@@ -55,33 +56,43 @@
                                         </select>
                                     </div>
                                     <div class="col-12">
+                                        <label class="form-label">Phòng chiếu</label>
                                         <select id="room_code" class="form-select" name="cinema_room_id">
                                             <option value="">Chọn phòng chiếu</option>
 
                                         </select>
                                     </div>
                                     <div class="col-12">
+                                        <label class="form-label">Trạng thái</label>
                                         <select id="inputState" class="form-select" name="status">
                                             <option value="" selected>Chọn trạng thái</option>
                                             <option
-                                                    {{ request('status') == 0 ? 'selected' : '' }}
-                                                    value="0">Chưa thanh toán
+                                                {{ (int)request('status') === 1 ? 'selected' : '' }}
+                                                value="1">Đã thanh toán
                                             </option>
                                             <option
-                                                   {{ (int)request('status') === 1 ? 'selected' : '' }}
-                                                    value="1">Đã thanh toán
-                                            </option>
-                                            <option
-                                                    {{ (int)request('status') === 2 ? 'selected' : '' }}
-                                                    value="2">Đã checkin
+                                                {{ (int)request('status') === 2 ? 'selected' : '' }}
+                                                value="2">Đã checkin
                                             </option>
                                         </select>
                                     </div>
                                     <div class="col-12">
-                                        <input name="id" value="{{request('id') ?? ''}}" class="form-control" placeholder="Số vé(ID)">
+                                        <label class="form-label">Ngày bắt đầu</label>
+                                        <input type="date" class="form-control date" id="start_date" name="start_date">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Ngày kết thúc</label>
+                                        <input type="date" class="form-control date" id="end_date" name="end_date">
+                                    </div>
+                                    <div class="col-12">
+                                        <input name="id" value="{{request('id') ?? ''}}" class="form-control"
+                                               placeholder="Số vé(ID)">
                                     </div>
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <a class="btn btn-info" href="{{ route('admin.order.index') }}">Hủy bỏ</a>
                                     </div>
                                 </form>
                             </div>
@@ -95,6 +106,7 @@
                                 <th>Số vé (ID)</th>
                                 <th>Khách hàng</th>
                                 <th>Rạp - phòng phim</th>
+                                <th>Số ghế</th>
                                 <th>Tổng tiền</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
@@ -105,43 +117,51 @@
                             @foreach ($orders as $order)
                                 <tr>
                                     <td>
-{{--                                        <a href="{{route('admin.order.edit',$order->id)}}">--}}
-                                            {{ $order->ticket_number }}
-{{--                                        </a>--}}
+                                        {{--                                        <a href="{{route('admin.order.edit',$order->id)}}">--}}
+                                        {{ $order->ticket_number }}
+                                        {{--                                        </a>--}}
                                     </td>
                                     <td>{{ $order->user?->name }}</td>
                                     <td>
                                         {{$order->schedule?->cinemaRoom->cinema->name}}
                                         - {{$order->schedule?->cinemaRoom->room_code}}
                                     </td>
+                                    <td>
+                                        @php
+                                            $chairCodeArr = $order->ticketOrderItems?->pluck('chair_code')->toArray();
+                                        @endphp
+                                        {{ !empty($chairCodeArr) ? implode(', ', $chairCodeArr) : '' }}
+                                    </td>
                                     <td>{{ number_format($order->grand_total) }}</td>
                                     <td>
-                                        <select class="form-select select-status-ticket-order" data-id="{{ $order->id }}">
+                                        <select class="form-select select-status-ticket-order"
+                                                data-id="{{ $order->id }}">
                                             @foreach (config('constant.STATUS_TICKET_ORDER') as $key => $val)
-                                                <option value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>
+                                                <option
+                                                    value="{{ $key }}" {{ $order->status == $key ? 'selected' : '' }}>
                                                     {{ $val }}
                                                 </option>
                                             @endforeach
-                                          </select>
+                                        </select>
                                     </td>
 
                                     <td>{{ \Carbon\Carbon::parse($order->created_at)?->format('Y-m-d') }}</td>
 
                                     <td class="table-action">
-{{--                                        <div class="d-flex justify-content-around">--}}
-{{--                                            <a href="{{ route('admin.order.edit', $order->id) }}" class="action-icon">--}}
-{{--                                                <i class="mdi mdi-pencil text-primary"></i>--}}
-{{--                                            </a>--}}
-{{--                                            <form action="{{ route('admin.order.destroy', $order->id) }}" method="POST">--}}
-{{--                                                @csrf--}}
-{{--                                                @method('DELETE')--}}
+                                        {{--                                        <div class="d-flex justify-content-around">--}}
+                                        {{--                                            <a href="{{ route('admin.order.edit', $order->id) }}" class="action-icon">--}}
+                                        {{--                                                <i class="mdi mdi-pencil text-primary"></i>--}}
+                                        {{--                                            </a>--}}
+                                        {{--                                            <form action="{{ route('admin.order.destroy', $order->id) }}" method="POST">--}}
+                                        {{--                                                @csrf--}}
+                                        {{--                                                @method('DELETE')--}}
 
-{{--                                                <button type="submit" class="btn btn-bg-none m-0 p-0"--}}
-{{--                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa?')">--}}
-{{--                                                    <i class="mdi mdi-delete icon-delete text-danger"></i>--}}
-{{--                                                </button>--}}
-{{--                                            </form>--}}
-{{--                                        </div>--}}
+                                        {{--                                                <button type="submit" class="btn btn-bg-none m-0 p-0"--}}
+                                        {{--                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa?')">--}}
+                                        {{--                                                    <i class="mdi mdi-delete icon-delete text-danger"></i>--}}
+                                        {{--                                                </button>--}}
+                                        {{--                                            </form>--}}
+                                        {{--                                        </div>--}}
                                     </td>
                                 </tr>
                             @endforeach
@@ -227,4 +247,3 @@
         })
     </script>
 @endpush
-

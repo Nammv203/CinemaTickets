@@ -163,6 +163,13 @@ class SchedulePublishFilmsController extends Controller
     public function showRoomMap(Request $request, $id)
     {
         $schedulePublish = $this->repository->find($id);
+        $cinemaRoomChairs = $schedulePublish->cinemaRoom->cinemaRoomChairs;
+        $cinemaRoomChairs = [
+            $cinemaRoomChairs->slice(0, 20)->values(),  // Collection 0: 20 items đầu
+            $cinemaRoomChairs->slice(20, 20)->values(), // Collection 1: 20 items tiếp theo
+            $cinemaRoomChairs->slice(40, 10)->values(), // Collection 2: 10 items
+            $cinemaRoomChairs->slice(50)->values(),     // Collection 3: Các items còn lại
+        ];
 
         $chairBooked = [];
         foreach($schedulePublish->ticketOrder as $key => $ticketOrders){
@@ -173,7 +180,7 @@ class SchedulePublishFilmsController extends Controller
 
         }
 
-        return view('backend.schedulePublishFilms.room_map', compact('schedulePublish', 'chairBooked'));
+        return view('backend.schedulePublishFilms.room_map', compact('schedulePublish', 'chairBooked', 'cinemaRoomChairs'));
     }
 
     /**
@@ -237,7 +244,6 @@ class SchedulePublishFilmsController extends Controller
             ]);
         }
 
-        
         toastr()->success('Xóa thành công.');
 
         return redirect()->back()->with('message', 'SchedulePublishFilm deleted.');
