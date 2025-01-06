@@ -5,7 +5,7 @@
 
     <style>
         .btn-show-detail {
-            background-color: transparent !important;
+            background-color: black !important;
         }
 
         .custom-modal-size {
@@ -148,22 +148,18 @@
                                                     </div>
                                                     <div class="st_calen_asc_tecket_time_select">
                                                         <ul>
+
                                                             @foreach($schs as $sch)
-                                                                @php
-                                                                    $sumTicketOrdered = $sch[0]->ticketOrderItems?->count() ?? 0;
-                                                                    // lay tong so ghe cua phong - so luong ghe da dat
-                                                                    $sumRoomChair = $sch[0]->cinemaRoom?->cinemaRoomChairs?->count();
-                                                                    $sumTicketRemaining = $sumRoomChair - $sumTicketOrdered;
-                                                                @endphp
                                                                 <li>
                                                                 <span>
                                                                     <h4>{{$sch[0]?->ticket_price ? number_format($sch[0]?->ticket_price) : 0}} đ</h4>
                                                                     <p class="asc_pera1">Giá vé (chưa cộng hạng ghế)</p>
-                                                                    <p class="asc_pera2">Vé còn lại: {{ $sumTicketRemaining }}</p>
+                                                                    <p class="asc_pera2">Filling Fast</p>
                                                                 </span>
-                                                                    <a href="{{route('client.movies.seat_booking',['schedule_id'=>$sch[0]?->id])}}">{{$sch[0]?->show_time}}</a>
+                                                                    <a href="{{route('auth.client.movies.seat_booking',['schedule_id'=>$sch[0]?->id])}}">{{$sch[0]?->show_time}}</a>
                                                                 </li>
                                                             @endforeach
+
                                                         </ul>
                                                     </div>
                                                 </div>
