@@ -1,14 +1,9 @@
 <?php
 
 if(!function_exists('get_all_category')){
-    function get_all_category($limit = null){
+    function get_all_category(){
         $categoryRepository = \Illuminate\Support\Facades\App::make(\App\Repositories\CategoryRepository::class);
-        return $categoryRepository
-            ->when($limit, function ($query, $limit) {
-                return $query->limit($limit)->get();
-            }, function ($query) {
-                return $query->get();
-            });
+        return $categoryRepository->all();
     }
 }
 

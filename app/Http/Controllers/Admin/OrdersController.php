@@ -6,11 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Response;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderUpdateRequest;
-use App\Models\Cinema;
-use App\Models\User;
-use App\Repositories\TicketOrderRepository;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Repositories\OrderRepository;
+use App\Validators\OrderValidator;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -43,43 +40,8 @@ class OrdersController extends Controller
      */
     public function index(Request $request)
     {
-        $orders = $this->repository
-            ->with(['ticketOrderItems'])
-            ->when($request->cinema_id || $request->cinema_room_id, function ($query) use ($request) {
-                if ($request->cinema_id) {
-                    $query->whereHas('schedule', function ($query) use ($request) {
-                        $query->whereHas('cinemaRoom', function ($query) use ($request) {
-                            $query->whereHas('cinema', function ($query) use ($request) {
-                                $query->where('id', $request->cinema_id);
-                            })
-                                ->when($request->cinema_room_id, function ($query) use ($request) {
-                                    $query->where('id', $request->cinema_room_id);
-                                });
-                        });
-                    });
-                }
-            })
-            ->when(isset($request->status), function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })
-            ->when(!empty($request->id), function ($query) use ($request) {
-                $query->where('ticket_number', 'like', '%' . $request->id . '%');
-            })
-            ->when(!empty($request->start_date) || !empty($request->end_date), function ($query) use ($request) {
-                $startDate = $request->start_date ? Carbon::parse($request->start_date)->format('Y-m-d') : null;
-                $endDate = $request->end_date ? Carbon::parse($request->end_date)->format('Y-m-d') : null;
-
-                $query->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('created_at', [$startDate, $endDate]);
-                })->when($startDate, function ($query) use ($startDate) {
-                    $query->where('created_at', '>=', $startDate);
-                })->when($endDate, function ($query) use ($endDate) {
-                    $query->where('created_at', '<=', $endDate);
-                });
-            })
-            ->orderBy('id', 'desc')
-            ->paginate(10);
-        $cinemas = Cinema::all();
+        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+        $orders = $this->repository->all();
 
         if (request()->wantsJson()) {
 
@@ -88,14 +50,7 @@ class OrdersController extends Controller
             ]);
         }
 
-        return view('backend.orders.index', compact('orders', 'cinemas'));
-    }
-
-    public function create(Request $request)
-    {
-        $users = User::all();
-
-        return view('backend.orders.create', compact('users'));
+        return view('orders.index', compact('orders'));
     }
 
     /**
@@ -194,8 +149,8 @@ class OrdersController extends Controller
             $order = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'Cập nhật thành công!',
-                'data' => $order->toArray(),
+                'message' => 'Order updated.',
+                'data'    => $order->toArray(),
             ];
 
             if ($request->wantsJson()) {

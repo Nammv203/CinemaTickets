@@ -47,10 +47,15 @@
                         </div>
                         <div class="col-sm-7">
                             <div class="text-sm-end">
-                                <button type="button" class="btn btn-success mb-2 me-1"><i
-                                        class="mdi mdi-cog-outline"></i></button>
-                                <button type="button" class="btn btn-light mb-2 me-1">Import</button>
-                                <button type="button" class="btn btn-light mb-2">Export</button>
+                                <form class="row row-cols-lg-auto g-3 align-items-end justify-content-end">
+                                    <div class="col-12">
+{{--                                        <label for="inputPassword2" class="visually-hidden">Password</label>--}}
+                                        <input type="search" class="form-control" id="inputPassword2" name="keyword" placeholder="Tên danh mục">
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -72,11 +77,12 @@
                                         <td class="category-description">{{ $category->description }}</td>
                                         <td class="category-img text-center">
                                             <img src="{{ asset(config('filesystems.folder_storage_user.category') . $category->picture) }}"
-                                                alt="category-img" width="150"/>
+                                                alt="category-img" width="150" />
                                         </td>
                                         <td class="table-action">
                                             <div class="d-flex justify-content-around">
-                                                <a href="{{ route('admin.category.edit', $category->id) }}" class="action-icon">
+                                                <a href="{{ route('admin.category.edit', $category->id) }}"
+                                                    class="action-icon">
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </a>
                                                 <form action="{{ route('admin.category.destroy', $category->id) }}"
@@ -96,6 +102,7 @@
                             </tbody>
                         </table>
                     </div>
+                    <div>{{$categories->links()}}</div>
                 </div>
             </div>
         </div>

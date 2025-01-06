@@ -43,10 +43,25 @@
                         </div>
                         <div class="col-sm-7">
                             <div class="text-sm-end">
-                                <button type="button" class="btn btn-success mb-2 me-1"><i
-                                        class="mdi mdi-cog-outline"></i></button>
-                                <button type="button" class="btn btn-light mb-2 me-1">Import</button>
-                                <button type="button" class="btn btn-light mb-2">Export</button>
+                                <form class="row row-cols-lg-auto g-3 align-items-end justify-content-end">
+                                    <div class="col-12">
+                                        <select id="inputState" class="form-select" name="category_id">
+                                            <option value="">Loại phim</option>
+                                            @foreach ($categories as $c)
+                                                <option {{ request('category_id') == $c->id ? 'selected' : '' }}
+                                                    value="{{ $c->id }}">{{ $c->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        {{--                                        <label for="inputPassword2" class="visually-hidden">Tìm kiếm</label> --}}
+                                        <input type="search" class="form-control" id="inputPassword2"
+                                            value="{{ request('keyword' ?? '') }}" name="keyword" placeholder="Tên phim">
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -83,8 +98,7 @@
                                                 <a href="{{ route('admin.film.edit', $film->id) }}" class="action-icon">
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </a>
-                                                <form action="{{ route('admin.film.destroy', $film->id) }}"
-                                                    method="POST">
+                                                <form action="{{ route('admin.film.destroy', $film->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
 

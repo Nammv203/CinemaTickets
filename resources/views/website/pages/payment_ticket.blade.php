@@ -121,7 +121,7 @@
 											<br>
                                             <span>{{number_format($sumChairTypePrice)}}đ</span>
 										</li>
-										<li>Ghi chú bảng giá ghế *<span></span>
+			<li>Ghi chú bảng giá ghế *<span></span>
 										</li>
 									</ul>
 									<p>Hạng ghế A <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_A}}</span>
@@ -199,15 +199,6 @@
                 // send data to backend
                 $('form#form-data-payment').submit();
             })
-        })
-
-        // change active btn payment
-        $('input[name="term_condition"]').change(function () {
-            if($(this).is(':checked')){
-                $('#btn-payment').addClass('active');
-            }else{
-                $('#btn-payment').removeClass('active');
-            }
         })
 	</script>
 </body>

@@ -3,23 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Ticket.
+ * Class UserVerify.
  *
  * @package namespace App\Models;
  */
-class Ticket extends Model implements Transformable
+class UserVerify extends Model implements Transformable
 {
     use TransformableTrait;
+    use Notifiable;
+
+    protected $table = 'users_verify';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'user_id',
+        'otp',
+        'token',
+        'token_expires'
+    ];
 
 }
