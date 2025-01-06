@@ -48,9 +48,13 @@ class CinemaRoomChairsController extends Controller
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
         $cinemaRoomChairs = $this->repository->getChairsByRoomId($roomId);
-        $cinemaRoomChairs = $cinemaRoomChairs->chunk(20);
+        $cinemaRoomChairs = [
+            $cinemaRoomChairs->slice(0, 20)->values(),  // Collection 0: 20 items đầu
+            $cinemaRoomChairs->slice(20, 20)->values(), // Collection 1: 20 items tiếp theo
+            $cinemaRoomChairs->slice(40, 10)->values(), // Collection 2: 10 items
+            $cinemaRoomChairs->slice(50)->values(),     // Collection 3: Các items còn lại
+        ];
         $cinemaRoom = $this->cinemaRoomRepository->getCinemaRoomWithCinemaById($roomId);
-
         if (request()->wantsJson()) {
 
             return response()->json([
@@ -74,7 +78,7 @@ class CinemaRoomChairsController extends Controller
     {
         try {
 
-            // $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
             $cinemaRoomChair = $this->repository->create($request->all());
 
@@ -150,7 +154,7 @@ class CinemaRoomChairsController extends Controller
     {
         try {
 
-            // $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
             $cinemaRoomChair = $this->repository->update($request->all(), $id);
 
