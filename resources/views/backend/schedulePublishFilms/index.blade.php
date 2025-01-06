@@ -27,71 +27,17 @@
                 <div class="card-body">
 
                     <div class="row mb-3 justify-content-between">
-                        <div class="col-sm-3">
+                        <div class="col-sm-5">
                             <a href="{{ route('admin.schedule.create') }}" class="btn btn-danger mb-2">
                                 <i class="mdi mdi-plus-circle me-2"></i>
                                 Thêm lịch chiếu
                             </a>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-2">
                             <div class="text-sm-end">
-                                <form class="row row-cols-lg-auto g-3 align-items-end justify-content-end">
-{{--                                    <div class="col-12">--}}
-{{--                                        <!-- Single Select -->--}}
-{{--                                        <select class="form-control select2" data-toggle="select2">--}}
-{{--                                            <option>Select</option>--}}
-{{--                                            <optgroup label="Alaskan/Hawaiian Time Zone">--}}
-{{--                                                <option value="AK">Alaska</option>--}}
-{{--                                                <option value="HI">Hawaii</option>--}}
-{{--                                            </optgroup>--}}
-{{--                                            <optgroup label="Pacific Time Zone">--}}
-{{--                                                <option value="CA">California</option>--}}
-{{--                                                <option value="NV">Nevada</option>--}}
-{{--                                                <option value="OR">Oregon</option>--}}
-{{--                                                <option value="WA">Washington</option>--}}
-{{--                                            </optgroup>--}}
-{{--                                        </select>--}}
-{{--                                    </div>--}}
-                                    <div class="col-12">
-                                        <select id="film_id" class="form-select" name="film_id">
-                                            <option value="">Chọn bộ phim</option>
-                                            @foreach($films as $film)
-                                                <option
-                                                    {{ request('film_id') == $film->id ? 'selected' : '' }}
-                                                    value="{{$film->id}}">{{$film->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <select id="cinema_id" class="form-select" name="cinema_id">
-                                            <option value="">Chọn rạp phim</option>
-                                            @foreach ($cinemas as $c)
-                                                <option {{ request('cinema_id') == $c->id ? 'selected' : '' }}
-                                                        value="{{ $c->id }}">{{ $c->name }} - {{ $c->cinema_code }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <select id="room_code" class="form-select" name="cinema_room_id">
-                                            <option value="">Chọn phòng chiếu</option>
-
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <select id="inputState" class="form-select" name="status">
-                                            <option value="" selected>Chọn trạng thái</option>
-                                            <option
-                                                        {{ request('status') == 1 ? 'selected' : '' }}
-                                                        value="1">Active</option>
-                                            <option
-                                                        {{ request('status') == 0 ? 'selected' : '' }}
-                                                        value="0">DeActive</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                                    </div>
-                                </form>
+                                <select class="form-select" name="cinema_id" id="select-cinema_id">
+                                    <option>-Lọc theo rạp-</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -130,7 +76,7 @@
                                         </td>
 
                                         <td class="table-action">
-                                            <div class="d-flex justify-content-around gap-2">
+                                            <div class="d-flex justify-content-around">
                                                 <a href="{{ route('admin.schedule.show', $schedule->id) }}" class="action-icon">
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </a>
@@ -143,9 +89,6 @@
                                                         <i class="mdi mdi-delete icon-delete text-danger"></i>
                                                     </button>
                                                 </form>
-                                                <a href="{{ route('admin.schedule.room.map',['schedule_id' => $schedule->id]) }}" class="action-icon" title="Sơ đồ ghế ngồi">
-                                                    <i class="ri-treasure-map-line text-primary"></i>
-                                                </a>
                                             </div>
                                         </td>
                                     </tr>
@@ -159,51 +102,3 @@
         </div>
     </div>
 @endsection
-@push('script-stack')
-    <script>
-        $(document).ready(function() {
-            const currentCinemaRoomIdSelected = {{request('cinema_room_id') ?? 0}};
-
-            function get_rooms_by_cinema() {
-
-                if($('#cinema_id').val()){
-                    callApiRenderRoom($('#cinema_id').val());
-                }
-
-                $('#cinema_id').change(function() {
-                    let cinemaId = $(this).val();
-
-                    callApiRenderRoom(cinemaId);
-                })
-            }
-
-            // function call ajax
-            function callApiRenderRoom(cinemaId)
-            {
-                $.ajax({
-                    url: '/admin/cinemas/' + cinemaId + '/cinema-rooms?limit=9999',
-                    type: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    success: function(data) {
-
-                        $("#room_code").empty();
-
-                        $.each(data?.data?.data ?? data?.data, function(key, value) {
-
-                            $('#room_code').append('<option value="' + value.id +
-                                `" ${currentCinemaRoomIdSelected == value.id ? 'selected' : ''}>` + value.room_code + '  </option>')
-                        })
-                    },
-                    error: function(error) {
-                        console.log('error', error)
-                    }
-                })
-            }
-
-            // call function
-            get_rooms_by_cinema();
-        })
-    </script>
-@endpush
