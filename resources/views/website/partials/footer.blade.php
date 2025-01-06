@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="prs_heading_section_wrapper">
-                        <h2>Our Patner’s</h2>
+                        <h2>Đối tác</h2>
                     </div>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -59,7 +59,7 @@
             <div class="row">
                 <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
                     <div class="prs_newsletter_text">
-                        <h3>Get update sign up now !</h3>
+                        <h3>Nhận thông tin cập nhật, đăng ký ngay!</h3>
                     </div>
                 </div>
                 <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
@@ -78,7 +78,7 @@
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="prs_footer_cont1_wrapper prs_footer_cont1_wrapper_1">
-                    <h2>LANGUAGE MOVIES</h2>
+                    <h2>PHỤ ĐỀ PHIM</h2>
                     <ul>
                         <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">English movie</a>
                         </li>
@@ -99,28 +99,22 @@
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="prs_footer_cont1_wrapper prs_footer_cont1_wrapper_2">
-                    <h2>MOVIES by presenter</h2>
+                    <h2>CÁC THỂ LOẠI PHIM</h2>
                     <ul>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Action movie</a>
-                        </li>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Romantic movie</a>
-                        </li>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Adult movie</a>
-                        </li>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Comedy movie</a>
-                        </li>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Drama movie</a>
-                        </li>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Musical movie</a>
-                        </li>
-                        <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">Classical movie</a>
-                        </li>
+                        @php
+                            $categories = get_all_category(10) ?? [];
+                            @endphp
+                        @foreach($categories as $category)
+                            <li>
+                                <i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="{{ route('client.categories', ['category_id' => $category->id]) }}">{{ $category->name }}</a>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="prs_footer_cont1_wrapper prs_footer_cont1_wrapper_3">
-                    <h2>BOOKING ONLINE</h2>
+                    <h2>ĐỐI TÁC ONLINE</h2>
                     <ul>
                         <li><i class="fa fa-circle"></i> &nbsp;&nbsp;<a href="#">www.example.com</a>
                         </li>
@@ -141,7 +135,7 @@
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="prs_footer_cont1_wrapper prs_footer_cont1_wrapper_4">
-                    <h2>App available on</h2>
+                    <h2>Ứng dụng</h2>
                     <p>Download App and Get Free Movie Ticket !</p>
                     <ul>
                         <li>
@@ -169,8 +163,8 @@
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-8 col-xs-12">
                 <div class="prs_bottom_footer_cont_wrapper">
-                    <p>Copyright 2022-23 <a href="#">Movie Pro</a> . All rights reserved - Design by <a
-                            href="#">Webstrot</a>
+                    <p>Copyright {{date('Y')}} <a href="#">Movie Pro</a> . All rights reserved - Design by <a
+                            href="#">FPT POLY</a>
                     </p>
                 </div>
             </div>

@@ -51,6 +51,10 @@ Route::group([
 
         Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('showRegistrationForm');
         Route::post('/register', [RegisterController::class, 'postRegister'])->name('postRegister');
+
+        Route::get('verify/{token}', [RegisterController::class, 'showVerifyForm'])->name('showVerify');
+        Route::post('verify/{token}', [RegisterController::class, 'postVerify'])->name('postVerify');
+        Route::post('resend-verify/{token}', [RegisterController::class, 'resendEmailVerify'])->name('resendVerify');
     });
 });
 
@@ -156,3 +160,5 @@ Route::group([
 
 Route::get('vnpay/return/{order_id}', [\App\Http\Controllers\Website\VnPayController::class,'vnpayReturn'])->name('vnpay.return');
 
+
+Route::get('vnpay/return/{order_id}', [\App\Http\Controllers\Website\VnPayController::class,'vnpayReturn'])->name('vnpay.return');

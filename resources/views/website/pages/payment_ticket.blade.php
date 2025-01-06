@@ -128,7 +128,7 @@
 									</p>
                                     <p>Hạng ghế B <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_B}}</span>
                                     </p>
-                                    <p>Hạng ghế C <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_C}}</span>
+                                    <p>Hạng ghế C (Ghế đôi) <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_C}}</span>
                                     </p>
                                     <p>Hạng ghế D <span>{{\App\Helpers\Constants::PRICE_CHAIR_TYPE_D}}</span>
                                     </p>
@@ -200,16 +200,6 @@
                 $('form#form-data-payment').submit();
             })
         })
-
-        // change active btn payment
-        $('input[name="term_condition"]').change(function () {
-            if($(this).is(':checked')){
-                $('#btn-payment').addClass('active');
-            }else{
-                $('#btn-payment').removeClass('active');
-            }
-        })
-
 	</script>
 </body>
 

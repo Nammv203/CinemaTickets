@@ -6,10 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Response;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderUpdateRequest;
-use App\Models\Cinema;
-use App\Models\User;
-use App\Repositories\TicketOrderRepository;
-use Illuminate\Http\Request;
+use App\Repositories\OrderRepository;
+use App\Validators\OrderValidator;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -42,31 +40,8 @@ class OrdersController extends Controller
      */
     public function index(Request $request)
     {
-        $orders = $this->repository
-            ->when($request->cinema_id || $request->cinema_room_id, function ($query) use ($request) {
-                if($request->cinema_id)
-                {
-                    $query->whereHas('schedule', function ($query) use ($request) {
-                        $query->whereHas('cinemaRoom', function ($query) use ($request) {
-                           $query->whereHas('cinema', function ($query) use ($request) {
-                               $query->where('id', $request->cinema_id);
-                           })
-                           ->when($request->cinema_room_id, function ($query) use ($request) {
-                               $query->where('id', $request->cinema_room_id);
-                           });
-                        });
-                    });
-                }
-            })
-            ->when(isset($request->status), function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })
-            ->when(!empty($request->id), function ($query) use ($request) {
-                $query->where('ticket_number','like', '%'.$request->id.'%');
-            })
-            ->orderBy('id', 'desc')
-            ->paginate(10);
-        $cinemas = Cinema::all();
+        $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+        $orders = $this->repository->all();
 
         if (request()->wantsJson()) {
 
@@ -75,20 +50,13 @@ class OrdersController extends Controller
             ]);
         }
 
-        return view('backend.orders.index', compact('orders','cinemas'));
-    }
-
-    public function create(Request $request)
-    {
-        $users = User::all();
-
-        return view('backend.orders.create', compact('users'));
+        return view('orders.index', compact('orders'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  OrderCreateRequest $request
+     * @param OrderCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      *
@@ -104,7 +72,7 @@ class OrdersController extends Controller
 
             $response = [
                 'message' => 'Order created.',
-                'data'    => $order->toArray(),
+                'data' => $order->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -118,7 +86,7 @@ class OrdersController extends Controller
             toastr()->error(trans('Tạo thành thất bại!'));
             if ($request->wantsJson()) {
                 return response()->json([
-                    'error'   => true,
+                    'error' => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -130,7 +98,7 @@ class OrdersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -151,7 +119,7 @@ class OrdersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -165,8 +133,8 @@ class OrdersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  OrderUpdateRequest $request
-     * @param  string            $id
+     * @param OrderUpdateRequest $request
+     * @param string $id
      *
      * @return Response
      *
@@ -181,7 +149,7 @@ class OrdersController extends Controller
             $order = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'Cập nhật thành công!',
+                'message' => 'Order updated.',
                 'data'    => $order->toArray(),
             ];
 
@@ -196,7 +164,7 @@ class OrdersController extends Controller
             if ($request->wantsJson()) {
 
                 return response()->json([
-                    'error'   => true,
+                    'error' => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -209,7 +177,7 @@ class OrdersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
