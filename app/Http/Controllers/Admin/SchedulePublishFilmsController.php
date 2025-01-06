@@ -53,9 +53,16 @@ class SchedulePublishFilmsController extends Controller
             ->when($request->cinema_room_id, function ($query) use ($request) {
                 $query->where('cinema_room_id', $request->cinema_room_id);
             })
-            ->orderBy('id','desc')
+            ->when($request->film_id, function ($query) use ($request) {
+                $query->where('film_id', $request->film_id);
+            })
+            ->when(isset($request->status), function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->orderBy('id', 'desc')
             ->paginate(20);
         $cinemas = Cinema::all();
+        $films = Film::all();
 
         if (request()->wantsJson()) {
 
@@ -64,7 +71,7 @@ class SchedulePublishFilmsController extends Controller
             ]);
         }
 
-        return view('backend.schedulePublishFilms.index', compact('schedulePublishFilms','cinemas'));
+        return view('backend.schedulePublishFilms.index', compact('schedulePublishFilms', 'cinemas', 'films'));
     }
 
     public function create()
@@ -73,13 +80,13 @@ class SchedulePublishFilmsController extends Controller
         $cinemas = Cinema::all();
         $cinemaRooms = CinemaRoom::all();
 
-        return view('backend.schedulePublishFilms.create', compact('films','cinemas','cinemaRooms'));
+        return view('backend.schedulePublishFilms.create', compact('films', 'cinemas', 'cinemaRooms'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  SchedulePublishFilmCreateRequest $request
+     * @param SchedulePublishFilmCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      *
@@ -93,7 +100,7 @@ class SchedulePublishFilmsController extends Controller
 
             $response = [
                 'message' => 'SchedulePublishFilm created.',
-                'data'    => $schedulePublishFilm->toArray(),
+                'data' => $schedulePublishFilm->toArray(),
             ];
             toastr()->success('Tạo thành công.');
             if ($request->wantsJson()) {
@@ -106,7 +113,7 @@ class SchedulePublishFilmsController extends Controller
             toastr()->error('Tạo thất bại.');
             if ($request->wantsJson()) {
                 return response()->json([
-                    'error'   => true,
+                    'error' => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -118,7 +125,7 @@ class SchedulePublishFilmsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -136,13 +143,13 @@ class SchedulePublishFilmsController extends Controller
             ]);
         }
 
-        return view('backend.schedulePublishFilms.edit', compact('schedulePublishFilm','films','cinemas','cinemaRooms'));
+        return view('backend.schedulePublishFilms.edit', compact('schedulePublishFilm', 'films', 'cinemas', 'cinemaRooms'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      *
      * @return \Illuminate\Http\Response
      */
@@ -151,6 +158,29 @@ class SchedulePublishFilmsController extends Controller
         $schedulePublishFilm = $this->repository->find($id);
 
         return view('schedulePublishFilms.edit', compact('schedulePublishFilm'));
+    }
+
+    public function showRoomMap(Request $request, $id)
+    {
+        $schedulePublish = $this->repository->find($id);
+        $cinemaRoomChairs = $schedulePublish->cinemaRoom->cinemaRoomChairs;
+        $cinemaRoomChairs = [
+            $cinemaRoomChairs->slice(0, 20)->values(),  // Collection 0: 20 items đầu
+            $cinemaRoomChairs->slice(20, 20)->values(), // Collection 1: 20 items tiếp theo
+            $cinemaRoomChairs->slice(40, 10)->values(), // Collection 2: 10 items
+            $cinemaRoomChairs->slice(50)->values(),     // Collection 3: Các items còn lại
+        ];
+
+        $chairBooked = [];
+        foreach($schedulePublish->ticketOrder as $key => $ticketOrders){
+
+            foreach($ticketOrders->ticketOrderItems as $key => $ticketOrderItem){
+                $chairBooked[] = $ticketOrderItem->chair_code;
+            }
+
+        }
+
+        return view('backend.schedulePublishFilms.room_map', compact('schedulePublish', 'chairBooked', 'cinemaRoomChairs'));
     }
 
     /**

@@ -52,7 +52,9 @@ class CinemaRoomsController extends Controller
     public function index(Request $request, $cinema_id = null)
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $cinemaRooms = $this->repository->paginate(request('limit',10));
+        $cinemaRooms = $this->repository
+            ->orderBy('id', 'desc')
+            ->paginate(request('limit',10));
         $cinema = null;
         if ($cinema_id) {
             $cinemaRooms = $this->repository->getListByCinemaId($request, $cinema_id);

@@ -19,7 +19,7 @@ class SchedulePublishFilmService
             $query->select('id', 'room_code','cinema_id')
                 ->with(['cinema'])
                 ->get();
-        }])
+        }, 'ticketOrderItems'])
             ->where('film_id', $movieId)
 //            ->where('show_date','<=', $after7days)
             ->where('show_date','>=', $currentDays)
