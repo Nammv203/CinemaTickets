@@ -1,5 +1,6 @@
 @extends('website.layouts.bookings')
 @section('page-title','Xác nhận đơn đặt')
+@section('banner-title','Xác nhận')
 @section('page-content')
 	<!-- st bc Start -->
 	<div class="st_bcc_main_main_wrapper float_left">
@@ -39,7 +40,7 @@
 									</div>
 								</div>
 								<div class="st_bcc_tecket_bottom_right_wrapper">
-									<img src="{{asset('assets-website')}}/images/content/qr.png" alt="img">
+{{--									<img src="{{asset('assets-website')}}/images/content/qr.png" alt="img">--}}
 									<h4>Booking ID<br>{{$order?->ticket_number}}</h4>
 								</div>
 								<div class="st_bcc_tecket_bottom_left_price_wrapper">
@@ -49,8 +50,7 @@
 							</div>
 						</div>
 						<div class="st_bcc_ticket_boxes_bottom_wrapper float_left">
-							<p>Bạn có thể truy cập vé từ Hồ sơ của mình. Chúng tôi sẽ gửi cho bạn
-								<br>1 cái email confirm trong vòng 15 phút tới.</p>
+							<p>Bạn có thể truy cập vé từ Hồ sơ của mình.</p>
 							<ul>
 								<li><a href="{{route('auth.ticket-purchase-history')}}">XEM ĐƠN ĐẶT</a>
 								</li>
